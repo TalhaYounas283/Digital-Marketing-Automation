@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
 import { Dashboard } from './components/Dashboard';
+import { CampaignManager } from './components/CampaignManager';
 import { ContentGenerator } from './components/ContentGenerator';
 import { CompetitorAnalysis } from './components/CompetitorAnalysis';
 import { Scheduler } from './components/Scheduler';
@@ -33,6 +34,7 @@ const AppRoutes: React.FC = () => {
       
       {/* Protected Routes */}
       <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+      <Route path="/campaigns" element={<ProtectedRoute><Layout><CampaignManager /></Layout></ProtectedRoute>} />
       <Route path="/generate" element={<ProtectedRoute><Layout><ContentGenerator /></Layout></ProtectedRoute>} />
       <Route path="/competitors" element={<ProtectedRoute><Layout><CompetitorAnalysis /></Layout></ProtectedRoute>} />
       <Route path="/email" element={<ProtectedRoute><Layout><EmailMarketing /></Layout></ProtectedRoute>} />
