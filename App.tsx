@@ -14,6 +14,9 @@ import { Settings } from './components/Settings';
 import { LeadsManager } from './components/LeadsManager';
 import { EmailMarketing } from './components/EmailMarketing';
 import { AutomationHub } from './components/AutomationHub';
+import { Reports } from './components/Reports';
+import { Notifications } from './components/Notifications';
+import { ActivityLog } from './components/ActivityLog';
 
 // Protected Route Wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,6 +46,9 @@ const AppRoutes: React.FC = () => {
       <Route path="/automation" element={<ProtectedRoute><Layout><AutomationHub /></Layout></ProtectedRoute>} />
       <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Layout><Settings /></Layout></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Layout><Reports /></Layout></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
+      <Route path="/activity" element={<ProtectedRoute><Layout><ActivityLog /></Layout></ProtectedRoute>} />
       
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

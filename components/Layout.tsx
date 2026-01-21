@@ -92,6 +92,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         return "Analytics";
       case "/settings":
         return "Settings";
+      case "/reports":
+        return "Detailed Reports";
+      case "/notifications":
+        return "Notifications";
+      case "/activity":
+        return "Activity Log";
       default:
         return "AutoMarketer";
     }
@@ -285,7 +291,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {getPageTitle()}
           </h2>
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/5 rounded-full">
+            <button 
+                onClick={() => navigate('/notifications')}
+                className="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/5 rounded-full"
+            >
               <Bell size={20} />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900 pointer-events-none"></span>
             </button>

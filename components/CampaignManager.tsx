@@ -9,6 +9,10 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
+  X,
+  Target,
+  DollarSign,
+  Calendar
 } from "lucide-react";
 
 interface Campaign {
@@ -82,8 +86,19 @@ const mockCampaigns: Campaign[] = [
 ];
 
 export const CampaignManager: React.FC = () => {
+  const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    platform: "Facebook",
+    budget: "",
+    status: "draft",
+    startDate: new Date().toISOString().split('T')[0]
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -115,7 +130,32 @@ export const CampaignManager: React.FC = () => {
     }
   };
 
-  const filteredCampaigns = mockCampaigns.filter((campaign) => {
+  const handleCreateCampaign = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newCampaign: Campaign = {
+        id: Date.now().toString(),
+        name: formData.name || "Untitled Campaign",
+        platform: formData.platform as any,
+        status: formData.status as any,
+        budget: Number(formData.budget) || 0,
+        spent: 0,
+        clicks: 0,
+        impressions: 0,
+        startDate: formData.startDate
+    };
+
+    setCampaigns([newCampaign, ...campaigns]);
+    setIsModalOpen(false);
+    setFormData({
+        name: "",
+        platform: "Facebook",
+        budget: "",
+        status: "draft",
+        startDate: new Date().toISOString().split('T')[0]
+    });
+  };
+
+  const filteredCampaigns = campaigns.filter((campaign) => {
     const matchesFilter = filter === "all" || campaign.status === filter;
     const matchesSearch = campaign.name
       .toLowerCase()
@@ -124,7 +164,7 @@ export const CampaignManager: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in relative">
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="relative flex-1 w-full md:w-auto max-w-md">
@@ -152,7 +192,10 @@ export const CampaignManager: React.FC = () => {
             <option value="completed">Completed</option>
             <option value="draft">Drafts</option>
           </select>
-          <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-lg shadow-blue-500/25 whitespace-nowrap">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-lg shadow-blue-500/25 whitespace-nowrap"
+          >
             <Plus size={18} />
             Create Campaign
           </button>
@@ -164,25 +207,25 @@ export const CampaignManager: React.FC = () => {
         {[
           {
             label: "Total Budget",
-            value: "$34,000",
+            value: `$${campaigns.reduce((acc, curr) => acc + curr.budget, 0).toLocaleString()}`,
             change: "+12%",
             color: "from-blue-500 to-cyan-500",
           },
           {
             label: "Total Spend",
-            value: "$15,690",
+            value: `$${campaigns.reduce((acc, curr) => acc + curr.spent, 0).toLocaleString()}`,
             change: "+8%",
             color: "from-purple-500 to-pink-500",
           },
           {
-            label: "Avg. CPA",
-            value: "$12.50",
+            label: "Total Clicks",
+            value: campaigns.reduce((acc, curr) => acc + curr.clicks, 0).toLocaleString(),
             change: "-5%",
             color: "from-emerald-500 to-teal-500",
           },
           {
-            label: "Conversions",
-            value: "1,250",
+            label: "Impressions",
+            value: campaigns.reduce((acc, curr) => acc + curr.impressions, 0).toLocaleString(),
             change: "+15%",
             color: "from-orange-500 to-amber-500",
           },
@@ -252,7 +295,7 @@ export const CampaignManager: React.FC = () => {
                         <div
                           className="h-full bg-blue-500 rounded-full"
                           style={{
-                            width: `${(campaign.spent / campaign.budget) * 100}%`,
+                            width: `${campaign.budget > 0 ? (campaign.spent / campaign.budget) * 100 : 0}%`,
                           }}
                         />
                       </div>
@@ -311,6 +354,116 @@ export const CampaignManager: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Create Campaign Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in p-4">
+          <div className="glass-panel w-full max-w-lg p-6 rounded-2xl shadow-2xl border border-white/10 bg-[#0f172a]">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-white">Create New Campaign</h3>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCreateCampaign} className="space-y-5">
+               <div>
+                 <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Campaign Name</label>
+                 <div className="relative">
+                    <Target className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                    <input 
+                        required
+                        type="text" 
+                        className="glass-input w-full pl-10 pr-4 py-3 text-sm" 
+                        placeholder="e.g. Winter Holiday Sale"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    />
+                 </div>
+               </div>
+
+               <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Platform</label>
+                    <select 
+                        className="glass-input w-full px-4 py-3 text-sm appearance-none cursor-pointer"
+                        value={formData.platform}
+                        onChange={(e) => setFormData({...formData, platform: e.target.value})}
+                    >
+                        <option value="Facebook">Facebook</option>
+                        <option value="Google">Google</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="Email">Email</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Status</label>
+                    <select 
+                        className="glass-input w-full px-4 py-3 text-sm appearance-none cursor-pointer"
+                        value={formData.status}
+                        onChange={(e) => setFormData({...formData, status: e.target.value})}
+                    >
+                        <option value="draft">Draft</option>
+                        <option value="active">Active</option>
+                        <option value="paused">Paused</option>
+                    </select>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Total Budget</label>
+                    <div className="relative">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                        <input 
+                            required
+                            type="number"
+                            min="0"
+                            className="glass-input w-full pl-10 pr-4 py-3 text-sm" 
+                            placeholder="5000"
+                            value={formData.budget}
+                            onChange={(e) => setFormData({...formData, budget: e.target.value})}
+                        />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Start Date</label>
+                    <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                        <input 
+                            required
+                            type="date"
+                            className="glass-input w-full pl-10 pr-4 py-3 text-sm" 
+                            value={formData.startDate}
+                            onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                        />
+                    </div>
+                  </div>
+               </div>
+
+               <div className="pt-4 flex gap-3">
+                 <button 
+                    type="button" 
+                    onClick={() => setIsModalOpen(false)} 
+                    className="flex-1 py-3 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 font-medium text-sm transition-colors"
+                 >
+                    Cancel
+                 </button>
+                 <button 
+                    type="submit" 
+                    className="flex-1 py-3 rounded-lg bg-blue-600 text-white hover:bg-blue-500 font-bold text-sm transition-all shadow-lg shadow-blue-500/25"
+                 >
+                    Create Campaign
+                 </button>
+               </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

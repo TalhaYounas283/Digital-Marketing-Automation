@@ -2,6 +2,7 @@ import React from 'react';
 import { StatsCard } from './StatsCard';
 import { Users, Eye, MousePointerClick, Activity, ArrowRight, TrendingUp } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 
 const data = [
   { name: 'Mon', visits: 4000, clicks: 2400 },
@@ -14,6 +15,8 @@ const data = [
 ];
 
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-8 animate-fade-in pb-8">
       <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 border-b border-slate-200 pb-6">
@@ -21,7 +24,10 @@ export const Dashboard: React.FC = () => {
           <h2 className="text-3xl font-bold text-slate-900 font-display">Dashboard</h2>
           <p className="text-slate-500 mt-1">Overview of your marketing performance.</p>
         </div>
-        <button className="bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm shadow-sm">
+        <button 
+          onClick={() => navigate('/reports')}
+          className="bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm shadow-sm"
+        >
           View Detailed Reports <ArrowRight size={16} />
         </button>
       </div>
@@ -105,7 +111,10 @@ export const Dashboard: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="w-full mt-6 py-2.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium border border-slate-200 rounded-lg transition-all">
+          <button 
+            onClick={() => navigate('/activity')}
+            className="w-full mt-6 py-2.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium border border-slate-200 rounded-lg transition-all"
+          >
             View All Activity
           </button>
         </div>
