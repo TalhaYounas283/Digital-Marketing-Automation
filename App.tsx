@@ -11,6 +11,7 @@ import { CompetitorAnalysis } from "./components/CompetitorAnalysis";
 import { CampaignManager } from "./components/CampaignManager";
 import { Scheduler } from "./components/Scheduler";
 import { Analytics } from "./components/Analytics";
+import { Reports } from "./components/Reports";
 import { Settings } from "./components/Settings";
 import { LeadsManager } from "./components/LeadsManager";
 import { EmailMarketing } from "./components/EmailMarketing";
@@ -22,7 +23,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
-    return <Redirect to="/login" />;
+    return <Navigate to="/login" replace />;
   }
   return <>{children}</>;
 };
@@ -138,6 +139,16 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <Layout>
               <Analytics />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Reports />
             </Layout>
           </ProtectedRoute>
         }

@@ -17,6 +17,7 @@ import {
   Crosshair,
   Bell,
   Layers,
+  FileText,
 } from "lucide-react";
 
 interface LayoutProps {
@@ -63,7 +64,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user, logout } = useAuth();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
@@ -80,6 +81,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         return "AI Studio";
       case "/competitors":
         return "Competitor Analysis";
+      case "/audience":
+        return "Audience Persona";
       case "/email":
         return "Email Campaigns";
       case "/leads":
@@ -90,6 +93,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         return "Automation Hub";
       case "/analytics":
         return "Analytics";
+      case "/reports":
+        return "Detailed Reports";
       case "/settings":
         return "Settings";
       default:
@@ -170,6 +175,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             to="/analytics"
             icon={<BarChart3 size={20} />}
             label="Analytics"
+          />
+          <NavItem
+            to="/reports"
+            icon={<FileText size={20} />}
+            label="Reports"
           />
           <NavItem
             to="/settings"

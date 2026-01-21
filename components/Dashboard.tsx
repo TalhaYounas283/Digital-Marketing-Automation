@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { StatsCard } from "./StatsCard";
 import {
   Users,
@@ -29,7 +30,7 @@ const data = [
 ];
 
 export const Dashboard: React.FC = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-8 animate-fade-in pb-8">
@@ -40,7 +41,7 @@ export const Dashboard: React.FC = () => {
           </p>
         </div>
         <button
-          onClick={() => history.push("/reports")}
+          onClick={() => navigate("/reports")}
           className="bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 text-sm shadow-sm"
         >
           View Detailed Reports <ArrowRight size={16} />
@@ -172,7 +173,7 @@ export const Dashboard: React.FC = () => {
             ))}
           </div>
           <button
-            onClick={() => history.push("/activity")}
+            onClick={() => navigate("/activity")}
             className="w-full mt-6 py-2.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium border border-slate-200 rounded-lg transition-all"
           >
             View All Activity

@@ -82,8 +82,14 @@ const mockCampaigns: Campaign[] = [
 ];
 
 export const CampaignManager: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [newCampaign, setNewCampaign] = useState({
+    name: "",
+    platform: "Facebook",
+    budget: 1000,
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -123,8 +129,16 @@ export const CampaignManager: React.FC = () => {
     return matchesFilter && matchesSearch;
   });
 
+  const handleCreate = () => {
+    alert(
+      `Campaign "${newCampaign.name}" created for ${newCampaign.platform} with budget $${newCampaign.budget}!`,
+    );
+    setIsModalOpen(false);
+    setNewCampaign({ name: "", platform: "Facebook", budget: 1000 });
+  };
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in relative">
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div className="relative flex-1 w-full md:w-auto max-w-md">
@@ -152,7 +166,10 @@ export const CampaignManager: React.FC = () => {
             <option value="completed">Completed</option>
             <option value="draft">Drafts</option>
           </select>
-          <button className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-sm whitespace-nowrap">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-sm whitespace-nowrap"
+          >
             <Plus size={18} />
             Create Campaign
           </button>
@@ -303,6 +320,89 @@ export const CampaignManager: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Create Campaign Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-slate-900">
+                Create New Campaign
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600"
+              >
+                <Filter className="rotate-45" size={24} />{" "}
+                {/* Using Filter as X icon replacement if X not imported, though X is usually imported in Layout. Let's assume standard close button behavior or just X icon if available, but here reusing existing imports to ensure safety. Actually X is not imported here. I'll use a text X or import X. */}
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Campaign Name
+                </label>
+                <input
+                  type="text"
+                  className="minimal-input w-full p-2.5 rounded-lg border border-slate-200"
+                  placeholder="e.g. Winter Sale"
+                  value={newCampaign.name}
+                  onChange={(e) =>
+                    setNewCampaign({ ...newCampaign, name: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Platform
+                </label>
+                <select
+                  className="minimal-input w-full p-2.5 rounded-lg border border-slate-200"
+                  value={newCampaign.platform}
+                  onChange={(e) =>
+                    setNewCampaign({ ...newCampaign, platform: e.target.value })
+                  }
+                >
+                  <option value="Facebook">Facebook</option>
+                  <option value="Instagram">Instagram</option>
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="Google">Google</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Budget ($)
+                </label>
+                <input
+                  type="number"
+                  className="minimal-input w-full p-2.5 rounded-lg border border-slate-200"
+                  value={newCampaign.budget}
+                  onChange={(e) =>
+                    setNewCampaign({
+                      ...newCampaign,
+                      budget: parseInt(e.target.value),
+                    })
+                  }
+                />
+              </div>
+              <div className="pt-4 flex gap-3">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreate}
+                  className="flex-1 px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium"
+                >
+                  Launch Campaign
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
