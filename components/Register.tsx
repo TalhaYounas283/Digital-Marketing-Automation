@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { Hexagon, ArrowRight, Loader2 } from "lucide-react";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { Hexagon, ArrowRight, Loader2 } from 'lucide-react';
 
 export const Register: React.FC = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export const Register: React.FC = () => {
     // Simulate API call
     setTimeout(() => {
       login(email, name);
-      navigate("/");
+      navigate('/');
       setIsLoading(false);
     }, 1000);
   };
@@ -30,21 +30,15 @@ export const Register: React.FC = () => {
             <Hexagon size={32} strokeWidth={1.5} />
           </div>
         </div>
-
-        <h2 className="text-2xl font-bold text-center text-slate-900 font-display mb-2">
-          Create Account
-        </h2>
-        <p className="text-center text-slate-500 mb-8 text-sm">
-          Join AutoMarketer AI today
-        </p>
+        
+        <h2 className="text-2xl font-bold text-center text-slate-900 font-display mb-2">Create Account</h2>
+        <p className="text-center text-slate-500 mb-8 text-sm">Join AutoMarketer AI today</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Full Name
-            </label>
-            <input
-              type="text"
+           <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name</label>
+            <input 
+              type="text" 
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -54,11 +48,9 @@ export const Register: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Email Address
-            </label>
-            <input
-              type="email"
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
+            <input 
+              type="email" 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -66,13 +58,11 @@ export const Register: React.FC = () => {
               placeholder="name@company.com"
             />
           </div>
-
+          
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-              Password
-            </label>
-            <input
-              type="password"
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Password</label>
+            <input 
+              type="password" 
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -81,29 +71,17 @@ export const Register: React.FC = () => {
             />
           </div>
 
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             disabled={isLoading}
             className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 mt-6"
           >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              <>
-                Get Started <ArrowRight size={20} />
-              </>
-            )}
+            {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Get Started <ArrowRight size={20} /></>}
           </button>
         </form>
 
         <p className="text-center text-slate-400 text-xs mt-8">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-600 hover:text-indigo-800 font-bold"
-          >
-            Sign In
-          </Link>
+          Already have an account? <Link to="/login" className="text-indigo-600 hover:text-indigo-800 font-bold">Sign In</Link>
         </p>
       </div>
     </div>
