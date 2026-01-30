@@ -79,9 +79,9 @@
           ]
         },
         "options": {
-            "thinkingConfig": {
-                "thinkingBudget": 32768
-            }
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
         }
       },
       "id": "gemini-strategy",
@@ -110,9 +110,9 @@
           ]
         },
         "options": {
-            "thinkingConfig": {
-                "thinkingBudget": 32768
-            }
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
         }
       },
       "id": "gemini-persona",
@@ -141,9 +141,9 @@
           ]
         },
         "options": {
-            "thinkingConfig": {
-                "thinkingBudget": 32768
-            }
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
         }
       },
       "id": "gemini-lead",
@@ -172,9 +172,9 @@
           ]
         },
         "options": {
-            "thinkingConfig": {
-                "thinkingBudget": 32768
-            }
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
         }
       },
       "id": "gemini-competitor",
@@ -229,9 +229,9 @@
           ]
         },
         "options": {
-            "thinkingConfig": {
-                "thinkingBudget": 32768
-            }
+          "thinkingConfig": {
+            "thinkingBudget": 32768
+          }
         }
       },
       "id": "gemini-seo",
