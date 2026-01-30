@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { analyzeCompetitor } from '../services/geminiService';
 import { SwotAnalysis } from '../types';
-import { Search, TrendingUp, AlertTriangle, Target, Shield, Loader2, ArrowRight } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Target, Shield, Loader2, ArrowRight } from 'lucide-react';
+import { Input } from './common/Input';
+import { Button } from './common/Button';
 
 export const CompetitorAnalysis: React.FC = () => {
   const [competitorName, setCompetitorName] = useState('');
@@ -33,33 +35,30 @@ export const CompetitorAnalysis: React.FC = () => {
           <div className="minimal-card p-8 w-full max-w-lg">
             <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">Start New Analysis</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Competitor Name</label>
-                <input 
-                  type="text" 
-                  value={competitorName}
-                  onChange={(e) => setCompetitorName(e.target.value)}
-                  className="minimal-input w-full rounded-lg p-3 text-sm"
-                  placeholder="e.g. Acme Corp"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Industry / Niche</label>
-                <input 
-                  type="text" 
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className="minimal-input w-full rounded-lg p-3 text-sm"
-                  placeholder="e.g. SaaS Marketing Tools"
-                />
-              </div>
-              <button 
+              <Input 
+                label="Competitor Name"
+                value={competitorName}
+                onChange={(e) => setCompetitorName(e.target.value)}
+                placeholder="e.g. Acme Corp"
+              />
+              
+              <Input 
+                 label="Industry / Niche"
+                 value={industry}
+                 onChange={(e) => setIndustry(e.target.value)}
+                 placeholder="e.g. SaaS Marketing Tools"
+              />
+
+              <Button 
                 onClick={handleAnalyze}
                 disabled={!competitorName || !industry}
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-bold transition-all disabled:opacity-50 mt-2 flex items-center justify-center gap-2"
+                fullWidth
+                size="lg"
+                icon={<ArrowRight size={16} />}
+                className="mt-2"
               >
-                 Analyze Competitor <ArrowRight size={16} />
-              </button>
+                 Analyze Competitor
+              </Button>
             </div>
           </div>
         </div>
@@ -81,9 +80,14 @@ export const CompetitorAnalysis: React.FC = () => {
            <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-xl">
               <h3 className="text-lg font-bold text-indigo-900 mb-2">Strategic Advice</h3>
               <p className="text-indigo-800 text-sm leading-relaxed">{analysis.strategicAdvice}</p>
-              <button onClick={() => setAnalysis(null)} className="mt-4 text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase tracking-wide">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setAnalysis(null)} 
+                className="mt-4 text-indigo-600 hover:text-indigo-800"
+              >
                 Start New Analysis
-              </button>
+              </Button>
            </div>
 
            {/* SWOT Grid */}

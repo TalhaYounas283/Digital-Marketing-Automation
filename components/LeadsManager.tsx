@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Lead } from '../types';
 import { analyzeLeadScore } from '../services/geminiService';
-import { Search, Filter, RefreshCw, Star, Loader2, X, Plus } from 'lucide-react';
+import { Search, Filter, RefreshCw, Star, Loader2, Plus } from 'lucide-react';
+import { Modal } from './common/Modal';
 
 const mockLeads: Lead[] = [
   { id: '1', name: 'Tech Solutions Inc.', email: 'contact@techsolutions.com', source: 'LinkedIn Ad', status: 'New', score: 0 },
@@ -133,47 +134,21 @@ export const LeadsManager: React.FC = () => {
         </div>
       </div>
 
-       {/* Add Lead Modal */}
-       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/10 backdrop-blur-sm animate-fade-in p-4">
-          <div className="bg-white border border-slate-200 w-full max-w-md p-6 rounded-2xl shadow-xl transform transition-all scale-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-slate-900">Add New Lead</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-900"><X size={18} /></button>
-            </div>
-            
+       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add New Lead">
             <form onSubmit={handleAddLead} className="space-y-4">
                <div>
                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Lead Name</label>
-                 <input 
-                    required
-                    type="text" 
-                    className="minimal-input w-full rounded-lg p-3 text-sm" 
-                    placeholder="Enter full name"
-                    value={newLead.name}
-                    onChange={(e) => setNewLead({...newLead, name: e.target.value})}
-                 />
+                 <input required type="text" className="minimal-input w-full rounded-lg p-3 text-sm" placeholder="Enter full name" value={newLead.name} onChange={(e) => setNewLead({...newLead, name: e.target.value})} />
                </div>
 
                <div>
                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Email</label>
-                 <input 
-                    required
-                    type="email" 
-                    className="minimal-input w-full rounded-lg p-3 text-sm" 
-                    placeholder="email@example.com"
-                    value={newLead.email}
-                    onChange={(e) => setNewLead({...newLead, email: e.target.value})}
-                 />
+                 <input required type="email" className="minimal-input w-full rounded-lg p-3 text-sm" placeholder="email@example.com" value={newLead.email} onChange={(e) => setNewLead({...newLead, email: e.target.value})} />
                </div>
 
                <div>
                  <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Source</label>
-                 <select 
-                    className="minimal-input w-full rounded-lg p-3 text-sm appearance-none"
-                    value={newLead.source}
-                    onChange={(e) => setNewLead({...newLead, source: e.target.value})}
-                 >
+                 <select className="minimal-input w-full rounded-lg p-3 text-sm appearance-none" value={newLead.source} onChange={(e) => setNewLead({...newLead, source: e.target.value})}>
                     <option value="">Select Source</option>
                     <option value="LinkedIn">LinkedIn</option>
                     <option value="Website">Website</option>
@@ -187,9 +162,7 @@ export const LeadsManager: React.FC = () => {
                  <button type="submit" className="flex-1 py-2.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-medium text-sm transition-all">Add Lead</button>
                </div>
             </form>
-          </div>
-        </div>
-      )}
+       </Modal>
     </div>
   );
 };

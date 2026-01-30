@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Platform, Tone, CampaignStrategy, OptimizationResult } from '../types';
 import { generateMarketingCopy, generateMarketingImage, generateCampaignStrategy, optimizeContent } from '../services/geminiService';
-import { Sparkles, Copy, Image as ImageIcon, Loader2, Lightbulb, Target, Layers, Wand2, Zap, ArrowRightLeft } from 'lucide-react';
+import { Sparkles, Copy, Image as ImageIcon, Lightbulb, Target, Wand2, Zap } from 'lucide-react';
+import { Button } from './common/Button';
+import { Input } from './common/Input';
+import { Select } from './common/Select';
 
 export const ContentGenerator: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'quick' | 'campaign' | 'optimize'>('quick');
@@ -73,24 +76,31 @@ export const ContentGenerator: React.FC = () => {
           <p className="text-slate-500 mt-1">Create and optimize content powered by Gemini 3 Pro.</p>
         </div>
         <div className="bg-slate-100 p-1 rounded-lg flex gap-1">
-          <button 
+          <Button 
+            size="sm" 
+            variant={activeTab === 'quick' ? 'outline' : 'ghost'} 
             onClick={() => setActiveTab('quick')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'quick' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={activeTab === 'quick' ? 'bg-white text-slate-900 shadow-sm' : ''}
           >
             Quick Post
-          </button>
-          <button 
+          </Button>
+          <Button 
+            size="sm" 
+            variant={activeTab === 'campaign' ? 'outline' : 'ghost'} 
             onClick={() => setActiveTab('campaign')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'campaign' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={activeTab === 'campaign' ? 'bg-white text-slate-900 shadow-sm' : ''}
           >
             Strategy
-          </button>
-          <button 
+          </Button>
+           <Button 
+            size="sm" 
+            variant={activeTab === 'optimize' ? 'outline' : 'ghost'} 
             onClick={() => setActiveTab('optimize')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'optimize' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+            className={activeTab === 'optimize' ? 'bg-white text-slate-900 shadow-sm' : ''}
+            icon={<Zap size={14} className={activeTab === 'optimize' ? 'text-indigo-500' : ''} />}
           >
-            <Zap size={14} className={activeTab === 'optimize' ? 'text-indigo-500' : ''} /> Optimizer
-          </button>
+            Optimizer
+          </Button>
         </div>
       </div>
 
@@ -111,111 +121,95 @@ export const ContentGenerator: React.FC = () => {
           <div className="space-y-5 flex-1">
             {activeTab === 'quick' && (
               <>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Topic</label>
-                  <textarea 
-                    value={topic}
-                    onChange={(e) => setTopic(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 h-32 resize-none placeholder:text-slate-400 text-sm"
-                    placeholder="What would you like to post about?"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Target Audience</label>
-                  <input 
-                    type="text"
-                    value={audience}
-                    onChange={(e) => setAudience(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 text-sm placeholder:text-slate-400"
-                    placeholder="Who are you writing for?"
-                  />
-                </div>
+                <Input 
+                  label="Topic"
+                  multiline
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  placeholder="What would you like to post about?"
+                  className="h-32"
+                />
+                
+                <Input 
+                   label="Target Audience"
+                   value={audience}
+                   onChange={(e) => setAudience(e.target.value)}
+                   placeholder="Who are you writing for?"
+                />
+
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Platform</label>
-                    <select 
-                      value={platform} 
-                      onChange={(e) => setPlatform(e.target.value as Platform)}
-                      className="minimal-input w-full rounded-lg p-3 text-sm appearance-none cursor-pointer"
-                    >
-                      {Object.values(Platform).map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tone</label>
-                    <select 
-                      value={tone} 
-                      onChange={(e) => setTone(e.target.value as Tone)}
-                      className="minimal-input w-full rounded-lg p-3 text-sm appearance-none cursor-pointer"
-                    >
-                      {Object.values(Tone).map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
+                  <Select 
+                    label="Platform"
+                    value={platform} 
+                    onChange={(e) => setPlatform(e.target.value as Platform)}
+                    options={Object.values(Platform).map(p => ({label: p, value: p}))}
+                  />
+                  <Select 
+                    label="Tone"
+                    value={tone} 
+                    onChange={(e) => setTone(e.target.value as Tone)}
+                    options={Object.values(Tone).map(t => ({label: t, value: t}))}
+                  />
                 </div>
               </>
             )}
             
             {activeTab === 'campaign' && (
               <>
-                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Product / Brand Name</label>
-                  <input 
-                    type="text"
+                 <Input 
+                    label="Product / Brand Name"
                     value={productName}
                     onChange={(e) => setProductName(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 text-sm placeholder:text-slate-400"
                     placeholder="e.g., AutoMarketer AI"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Campaign Goal</label>
-                  <textarea 
+                 />
+                 <Input 
+                    label="Campaign Goal"
+                    multiline
                     value={campaignGoal}
                     onChange={(e) => setCampaignGoal(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 h-40 resize-none text-sm placeholder:text-slate-400"
                     placeholder="What are the objectives?"
-                  />
-                </div>
+                    className="h-40"
+                 />
               </>
             )}
 
             {activeTab === 'optimize' && (
               <>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Content to Optimize</label>
-                  <textarea 
+                <Input 
+                    label="Content to Optimize"
+                    multiline
                     value={contentToOptimize}
                     onChange={(e) => setContentToOptimize(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 h-48 resize-none text-sm placeholder:text-slate-400"
                     placeholder="Paste your draft here (email, post, blog intro)..."
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Optimization Goal</label>
-                  <select 
+                    className="h-48"
+                />
+                
+                <Select 
+                    label="Optimization Goal"
                     value={optimizationGoal} 
                     onChange={(e) => setOptimizationGoal(e.target.value)}
-                    className="minimal-input w-full rounded-lg p-3 text-sm appearance-none cursor-pointer"
-                  >
-                    <option>Make it more engaging and viral</option>
-                    <option>Fix grammar and professionalize tone</option>
-                    <option>Shorten and make punchy</option>
-                    <option>Expand and add detail</option>
-                    <option>Optimize for SEO keywords</option>
-                  </select>
-                </div>
+                    options={[
+                        {label: "Make it more engaging and viral", value: "Make it more engaging and viral"},
+                        {label: "Fix grammar and professionalize tone", value: "Fix grammar and professionalize tone"},
+                        {label: "Shorten and make punchy", value: "Shorten and make punchy"},
+                        {label: "Expand and add detail", value: "Expand and add detail"},
+                        {label: "Optimize for SEO keywords", value: "Optimize for SEO keywords"}
+                    ]}
+                />
               </>
             )}
           </div>
 
-          <button 
+          <Button 
             onClick={activeTab === 'quick' ? handleGeneratePost : activeTab === 'campaign' ? handleGenerateStrategy : handleOptimizeContent}
             disabled={isGenerating || (activeTab === 'quick' ? !topic : activeTab === 'campaign' ? !productName : !contentToOptimize)}
-            className="w-full mt-6 py-3 rounded-lg font-bold text-white bg-slate-900 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-sm"
+            isLoading={isGenerating}
+            icon={<Wand2 size={18} />}
+            fullWidth
+            className="mt-6"
           >
-            {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
             {isGenerating ? 'Processing...' : (activeTab === 'quick' ? 'Generate Content' : activeTab === 'campaign' ? 'Develop Strategy' : 'Optimize Content')}
-          </button>
+          </Button>
         </div>
 
         {/* Output Section */}
@@ -253,12 +247,14 @@ export const ContentGenerator: React.FC = () => {
                     <p className="text-slate-800 whitespace-pre-wrap leading-relaxed text-sm">{post}</p>
                   </div>
                   <div className="bg-slate-50 p-3 border-t border-slate-100 flex justify-end">
-                    <button 
-                      onClick={() => handleGenerateImage(post)} 
-                      className="text-xs flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium bg-white border border-slate-200 px-3 py-1.5 rounded-md transition-colors shadow-sm"
+                    <Button 
+                        size="sm" 
+                        variant="secondary" 
+                        onClick={() => handleGenerateImage(post)}
+                        icon={<ImageIcon size={14}/>}
                     >
-                      <ImageIcon size={14}/> Generate Visual
-                    </button>
+                      Generate Visual
+                    </Button>
                   </div>
               </div>
             ))}
@@ -307,9 +303,14 @@ export const ContentGenerator: React.FC = () => {
                             ))}
                           </div>
                           <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                            <button onClick={() => handleGenerateImage(post.content)} className="flex items-center gap-2 text-xs text-slate-600 hover:text-indigo-600 font-medium transition-colors">
-                                <ImageIcon size={14} /> Create Visual
-                            </button>
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => handleGenerateImage(post.content)}
+                                icon={<ImageIcon size={14} />}
+                            >
+                                Create Visual
+                            </Button>
                             <button className="text-slate-400 hover:text-slate-900 transition-colors">
                                 <Copy size={16} onClick={() => navigator.clipboard.writeText(post.content)} />
                             </button>
@@ -332,9 +333,9 @@ export const ContentGenerator: React.FC = () => {
                       <div className="p-6">
                         <p className="text-slate-800 text-base leading-relaxed whitespace-pre-wrap">{optimizationResult.optimized}</p>
                         <div className="flex justify-end mt-4">
-                           <button className="text-slate-500 hover:text-indigo-600 flex items-center gap-1 text-xs font-medium transition-colors">
-                             <Copy size={14} onClick={() => navigator.clipboard.writeText(optimizationResult.optimized)}/> Copy Result
-                           </button>
+                           <Button variant="ghost" size="sm" icon={<Copy size={14} />} onClick={() => navigator.clipboard.writeText(optimizationResult.optimized)}>
+                              Copy Result
+                           </Button>
                         </div>
                       </div>
                   </div>
@@ -350,10 +351,7 @@ export const ContentGenerator: React.FC = () => {
 
             {isGeneratingImage && (
               <div className="h-64 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                  <Loader2 className="animate-spin text-indigo-600" size={24}/>
-                  <p className="text-slate-500 text-xs font-medium">Rendering...</p>
-                </div>
+                <Button isLoading variant="ghost" disabled>Rendering...</Button>
               </div>
             )}
             {generatedImage && (

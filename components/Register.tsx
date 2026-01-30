@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Hexagon, ArrowRight, Loader2 } from 'lucide-react';
+import { Hexagon, ArrowRight } from 'lucide-react';
+import { Input } from './common/Input';
+import { Button } from './common/Button';
 
 export const Register: React.FC = () => {
   const [name, setName] = useState('');
@@ -34,50 +36,44 @@ export const Register: React.FC = () => {
         <h2 className="text-2xl font-bold text-center text-slate-900 font-display mb-2">Create Account</h2>
         <p className="text-center text-slate-500 mb-8 text-sm">Join AutoMarketer AI today</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name</label>
-            <input 
-              type="text" 
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-              placeholder="John Doe"
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+           <Input
+            label="Full Name"
+            type="text" 
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="John Doe"
+          />
 
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
-            <input 
-              type="email" 
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-              placeholder="name@company.com"
-            />
-          </div>
+          <Input
+            label="Email Address"
+            type="email" 
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="name@company.com"
+          />
           
-          <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Password</label>
-            <input 
-              type="password" 
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-              placeholder="••••••••"
-            />
-          </div>
+          <Input 
+            label="Password"
+            type="password" 
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
 
-          <button 
+          <Button 
             type="submit" 
-            disabled={isLoading}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 mt-6"
+            isLoading={isLoading}
+            fullWidth
+            size="lg"
+            icon={!isLoading && <ArrowRight size={20} />}
+            className="mt-6"
           >
-            {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>Get Started <ArrowRight size={20} /></>}
-          </button>
+            Get Started
+          </Button>
         </form>
 
         <p className="text-center text-slate-400 text-xs mt-8">
