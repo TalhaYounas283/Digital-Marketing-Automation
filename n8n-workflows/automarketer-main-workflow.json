@@ -1,0 +1,494 @@
+{
+  "name": "AutoMarketer AI - Complete Marketing Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "automarketer",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000001",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 460],
+      "webhookId": "automarketer-webhook"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "rules": [
+            {
+              "outputKey": "content_generation",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "content_generation",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "lead_scoring",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "lead_scoring",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "competitor_analysis",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "competitor_analysis",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "campaign_strategy",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "campaign_strategy",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "audience_persona",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "audience_persona",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "content_optimizer",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "content_optimizer",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "email_campaign",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "email_campaign",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "schedule_optimization",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "loose"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.task_type }}",
+                    "rightValue": "schedule_optimization",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000002",
+      "name": "Route Task",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [460, 460]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.7,
+          "maxTokens": 2000
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert social media marketing copywriter for AutoMarketer AI. Generate engaging, platform-optimized content.\n\nRules by Platform:\n- Twitter/X: Max 280 chars, punchy, 2-3 trending hashtags\n- LinkedIn: Professional tone, 1-3 paragraphs, industry insights\n- Instagram: Casual, emoji-rich (5-8 emojis), 8-12 hashtags\n- Facebook: Conversational, include clear CTA, shareable format\n\nAlways respond with ONLY valid JSON, no markdown."
+            },
+            {
+              "content": "Generate 3 unique social media posts.\n\nPlatform: {{ $json.input_data.platform }}\nTopic: {{ $json.input_data.topic }}\nTone: {{ $json.input_data.tone }}\nTarget Audience: {{ $json.input_data.audience }}\n\nRespond with JSON:\n{\n  \"posts\": [\n    {\n      \"content\": \"full post text with emojis if appropriate\",\n      \"hashtags\": [\"relevant\", \"hashtags\"],\n      \"characterCount\": 150,\n      \"bestPostingTime\": \"Tuesday 9:00 AM EST\",\n      \"engagementTip\": \"why this will perform well\"\n    }\n  ],\n  \"imagePrompt\": \"DALL-E prompt for accompanying visual\",\n  \"contentPillars\": [\"themes used\"]\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000003",
+      "name": "Content Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 100]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.3,
+          "maxTokens": 1000
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an AI lead scoring analyst for AutoMarketer AI. Evaluate leads based on conversion potential using data-driven criteria.\n\nScoring Framework (0-100):\n- Corporate email domain: +15 points\n- Decision maker title: +20 points\n- Multiple interactions: +15 points\n- Industry fit: +25 points\n- Company size match: +15 points\n- Source quality: Referral(+20) > LinkedIn(+15) > Website(+10) > Cold(+5)\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Score this lead:\n\nName: {{ $json.input_data.name }}\nEmail: {{ $json.input_data.email }}\nCompany: {{ $json.input_data.company }}\nJob Title: {{ $json.input_data.job_title }}\nSource: {{ $json.input_data.source }}\nInteractions: {{ $json.input_data.interactions }}\nIndustry: {{ $json.input_data.industry }}\n\nRespond with JSON:\n{\n  \"score\": 75,\n  \"tier\": \"Hot\",\n  \"breakdown\": {\n    \"emailQuality\": 15,\n    \"titleScore\": 20,\n    \"engagementScore\": 15,\n    \"industryFit\": 25,\n    \"sourceScore\": 10\n  },\n  \"reasoning\": \"This lead shows strong buying signals...\",\n  \"buyingSignals\": [\"Downloaded whitepaper\", \"Attended webinar\"],\n  \"recommendedAction\": \"Schedule discovery call within 24 hours\",\n  \"priority\": \"High\",\n  \"estimatedDealSize\": \"$15,000\",\n  \"nextSteps\": [\"Send personalized follow-up\", \"Add to nurture sequence\"]\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000004",
+      "name": "Lead Scorer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 220]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.5,
+          "maxTokens": 2500
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a competitive intelligence analyst for AutoMarketer AI. Perform comprehensive SWOT analysis with actionable strategic recommendations.\n\nAnalysis Areas:\n- Market positioning & messaging\n- Content strategy & frequency\n- Pricing & value proposition\n- Customer sentiment & reviews\n- Social media presence & engagement\n- Product features & gaps\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Analyze this competitor:\n\nCompetitor: {{ $json.input_data.competitor_name }}\nIndustry: {{ $json.input_data.industry }}\nOur Company: {{ $json.input_data.our_company }}\nContext: {{ $json.input_data.context }}\n\nRespond with JSON:\n{\n  \"competitor\": \"Company Name\",\n  \"overview\": \"Brief company description\",\n  \"strengths\": [\n    {\"point\": \"Strong brand recognition\", \"impact\": \"High\", \"evidence\": \"Market data\"}\n  ],\n  \"weaknesses\": [\n    {\"point\": \"Limited integrations\", \"impact\": \"Medium\", \"opportunity\": \"How we can exploit\"}\n  ],\n  \"opportunities\": [\n    {\"point\": \"Underserved market segment\", \"actionable\": \"Launch targeted campaign\"}\n  ],\n  \"threats\": [\n    {\"point\": \"Aggressive pricing\", \"mitigation\": \"Focus on value differentiation\"}\n  ],\n  \"marketPosition\": \"Leader/Challenger/Niche\",\n  \"strategicAdvice\": \"Detailed recommendation paragraph\",\n  \"actionItems\": [\n    {\"action\": \"Launch comparison landing page\", \"priority\": \"High\", \"timeline\": \"2 weeks\"}\n  ]\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000005",
+      "name": "Competitor Analyzer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 340]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 3000
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a senior marketing strategist for AutoMarketer AI. Create comprehensive, data-driven campaign strategies with clear execution plans.\n\nStrategy Components:\n- Campaign objectives & KPIs\n- Target audience definition\n- Channel mix & budget allocation\n- Content calendar & themes\n- Messaging framework\n- Success metrics & milestones\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Create campaign strategy:\n\nProduct/Service: {{ $json.input_data.product_name }}\nCampaign Goal: {{ $json.input_data.campaign_goal }}\nBudget: {{ $json.input_data.budget }}\nDuration: {{ $json.input_data.duration }}\nTarget Market: {{ $json.input_data.target_market }}\n\nRespond with JSON:\n{\n  \"campaignName\": \"Descriptive campaign name\",\n  \"overview\": \"2-3 sentence executive summary\",\n  \"objectives\": [{\"objective\": \"Increase brand awareness\", \"metric\": \"Impressions\", \"target\": \"500,000\"}],\n  \"targetAudience\": {\n    \"primary\": \"Marketing managers at B2B SaaS companies\",\n    \"secondary\": \"CMOs at mid-market firms\"\n  },\n  \"keyMessages\": [\"Primary message\", \"Supporting message\"],\n  \"contentCalendar\": {\n    \"week1\": {\"theme\": \"Problem awareness\", \"content\": [\"Blog post\", \"Social series\"]},\n    \"week2\": {\"theme\": \"Solution introduction\", \"content\": [\"Case study\", \"Webinar promo\"]}\n  },\n  \"channelStrategy\": [\n    {\"channel\": \"LinkedIn\", \"budget\": 3000, \"objective\": \"Lead generation\"}\n  ],\n  \"kpis\": [{\"metric\": \"Marketing Qualified Leads\", \"target\": 200}],\n  \"successCriteria\": \"Campaign succeeds if we achieve 150+ MQLs at <$50 CPL\"\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000006",
+      "name": "Campaign Strategist",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 460]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 2500
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a market research expert for AutoMarketer AI. Create detailed, actionable buyer personas based on real market insights.\n\nPersona Components:\n- Demographics & firmographics\n- Professional background\n- Goals, challenges & pain points\n- Buying behavior & decision process\n- Content preferences & channels\n- Objections & how to overcome them\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Create buyer persona:\n\nProduct: {{ $json.input_data.product_name }}\nIndustry: {{ $json.input_data.industry }}\nRegion: {{ $json.input_data.region }}\n\nRespond with JSON:\n{\n  \"personaName\": \"Marketing Mary\",\n  \"tagline\": \"The data-driven growth marketer\",\n  \"demographics\": {\n    \"ageRange\": \"28-38\",\n    \"location\": \"Urban, Tier 1 cities\",\n    \"education\": \"Bachelor's or MBA\"\n  },\n  \"professional\": {\n    \"titles\": [\"Marketing Manager\", \"Growth Lead\"],\n    \"companySize\": \"50-500 employees\",\n    \"experience\": \"5-10 years\"\n  },\n  \"goals\": [{\"goal\": \"Increase qualified leads by 40%\", \"timeline\": \"This quarter\"}],\n  \"challenges\": [{\"challenge\": \"Limited bandwidth for content creation\", \"severity\": \"High\"}],\n  \"painPoints\": [\"Manual reporting takes 10+ hours/week\"],\n  \"buyingBehavior\": {\n    \"researchProcess\": \"Reads reviews, asks peers, trials free versions\",\n    \"decisionInfluencers\": [\"Peer recommendations\", \"Case studies\"]\n  },\n  \"contentPreferences\": [\"Case studies with metrics\", \"How-to guides\"],\n  \"objections\": [{\"objection\": \"We already have tools for this\", \"response\": \"Show integration benefits\"}],\n  \"messagingRecommendations\": [\"Lead with time-saving benefits\", \"Show concrete ROI numbers\"]\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000007",
+      "name": "Persona Builder",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 580]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.4,
+          "maxTokens": 1500
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an expert content editor and optimizer for AutoMarketer AI. Improve marketing content while maintaining brand voice.\n\nOptimization Types:\n- 'engaging': Add hooks, emotional triggers, stronger CTAs\n- 'grammar': Fix errors, improve clarity and flow\n- 'shorten': Condense while keeping impact\n- 'expand': Add detail, examples, context\n- 'seo': Add keywords, improve structure, meta optimization\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Optimize this content:\n\nOriginal: {{ $json.input_data.content }}\nGoal: {{ $json.input_data.goal }}\nPlatform: {{ $json.input_data.platform }}\nAudience: {{ $json.input_data.audience }}\n\nRespond with JSON:\n{\n  \"original\": \"Original content here\",\n  \"optimized\": \"Improved content here\",\n  \"changes\": [{\"type\": \"Hook added\", \"before\": \"old text\", \"after\": \"new text\", \"reason\": \"Increases engagement\"}],\n  \"metrics\": {\n    \"readabilityBefore\": 6,\n    \"readabilityAfter\": 8,\n    \"engagementPrediction\": \"High\"\n  },\n  \"alternativeVersions\": [{\"version\": \"A/B Test Version\", \"content\": \"Alternative take\"}],\n  \"recommendations\": [\"Add a video to increase engagement\"]\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000008",
+      "name": "Content Optimizer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 700]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.6,
+          "maxTokens": 3500
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are an email marketing specialist for AutoMarketer AI. Create high-converting email sequences with compelling copy.\n\nEmail Types:\n- Welcome: Onboarding new subscribers\n- Product Launch: Announcing new features/products\n- Re-engagement: Win back inactive users\n- Abandoned Cart: Recovery sequences\n- Newsletter: Regular value delivery\n- Promotional: Sales and offers\n\nBest Practices:\n- Subject lines: 40-60 chars, curiosity/benefit driven\n- Preheader: 40-100 chars, complement subject\n- Body: Scannable, one CTA per email\n- Personalization: Use merge tags appropriately\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Create email campaign:\n\nType: {{ $json.input_data.email_type }}\nProduct: {{ $json.input_data.product }}\nGoal: {{ $json.input_data.goal }}\nAudience: {{ $json.input_data.audience }}\nBrand Voice: {{ $json.input_data.brand_voice }}\n\nRespond with JSON:\n{\n  \"campaignName\": \"Spring Product Launch Sequence\",\n  \"objective\": \"Drive 500 demo requests\",\n  \"sequence\": [\n    {\n      \"emailNumber\": 1,\n      \"name\": \"Introduction\",\n      \"subject\": \"{{first_name}}, you're going to love this\",\n      \"preheader\": \"The feature you've been asking for is here\",\n      \"sendTiming\": {\"delay\": \"Immediately\", \"bestDay\": \"Tuesday\", \"bestTime\": \"10:00 AM\"},\n      \"body\": \"Hi {{first_name}}, We've been listening to your feedback...\",\n      \"cta\": {\"text\": \"Explore New Features\", \"url\": \"{{product_url}}\"},\n      \"goal\": \"Generate curiosity and clicks\"\n    }\n  ],\n  \"automationTriggers\": [\"User signs up for trial\"],\n  \"expectedMetrics\": {\n    \"openRate\": \"25-35%\",\n    \"clickRate\": \"3-5%\",\n    \"conversionRate\": \"2-4%\"\n  }\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000009",
+      "name": "Email Campaign Generator",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 820]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.4,
+          "maxTokens": 2000
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a social media scheduling expert for AutoMarketer AI. Optimize posting schedules based on platform best practices and audience behavior.\n\nPlatform Optimal Times (General):\n- LinkedIn: Tue-Thu, 7-8 AM, 12 PM, 5-6 PM\n- Twitter/X: Mon-Fri, 8 AM, 12 PM, 5 PM\n- Instagram: Mon-Fri, 11 AM-1 PM, 7-9 PM\n- Facebook: Wed-Fri, 1-4 PM\n\nConsider audience timezone and industry.\n\nAlways respond with ONLY valid JSON."
+            },
+            {
+              "content": "Optimize posting schedule:\n\nPlatform: {{ $json.input_data.platform }}\nAudience Timezone: {{ $json.input_data.timezone }}\nIndustry: {{ $json.input_data.industry }}\nCurrent Posting Data: {{ $json.input_data.engagement_data }}\nGoal: {{ $json.input_data.goal }}\n\nRespond with JSON:\n{\n  \"platform\": \"LinkedIn\",\n  \"audienceTimezone\": \"EST\",\n  \"recommendedSchedule\": {\n    \"monday\": [{\"time\": \"08:00\", \"priority\": 1, \"contentType\": \"Industry insights\"}],\n    \"tuesday\": [{\"time\": \"12:00\", \"priority\": 1, \"contentType\": \"How-to content\"}],\n    \"wednesday\": [{\"time\": \"08:00\", \"priority\": 1, \"contentType\": \"Case study\"}],\n    \"thursday\": [{\"time\": \"12:00\", \"priority\": 1, \"contentType\": \"Product highlight\"}],\n    \"friday\": [{\"time\": \"10:00\", \"priority\": 2, \"contentType\": \"Week recap\"}]\n  },\n  \"optimalFrequency\": {\"minimum\": 3, \"recommended\": 5, \"maximum\": 7, \"unit\": \"posts per week\"},\n  \"peakEngagementWindows\": [{\"window\": \"Tuesday 8-9 AM\", \"engagement\": \"Highest\", \"bestFor\": \"Important announcements\"}],\n  \"contentMixRecommendation\": {\"educational\": \"40%\", \"promotional\": \"20%\", \"engagement\": \"25%\", \"curated\": \"15%\"}\n}",
+              "role": "user"
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000010",
+      "name": "Schedule Optimizer",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.4,
+      "position": [700, 940]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and format AI response\nconst input = $input.first().json;\nconst taskType = $('Webhook').first().json.task_type;\n\nlet result;\ntry {\n  let content = input.message?.content || input.choices?.[0]?.message?.content || input.text || input.content || JSON.stringify(input);\n  \n  if (typeof content === 'string') {\n    const jsonMatch = content.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      result = JSON.parse(jsonMatch[0]);\n    } else {\n      result = { rawResponse: content };\n    }\n  } else {\n    result = content;\n  }\n} catch (error) {\n  result = { \n    error: 'Failed to parse AI response',\n    rawResponse: input,\n    parseError: error.message\n  };\n}\n\nreturn [{\n  json: {\n    success: !result.error,\n    task: taskType,\n    timestamp: new Date().toISOString(),\n    result: result,\n    metadata: {\n      model: 'gpt-4o',\n      version: '2.0',\n      processedAt: Date.now()\n    }\n  }\n}];"
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000011",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 460]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000012",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1180, 460]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: false, error: 'Unknown task_type. Valid types: content_generation, lead_scoring, competitor_analysis, campaign_strategy, audience_persona, content_optimizer, email_campaign, schedule_optimization', received: $json.task_type }) }}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-1111-4444-8888-000000000013",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [700, 1060]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Route Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Task": {
+      "main": [
+        [{ "node": "Content Generator", "type": "main", "index": 0 }],
+        [{ "node": "Lead Scorer", "type": "main", "index": 0 }],
+        [{ "node": "Competitor Analyzer", "type": "main", "index": 0 }],
+        [{ "node": "Campaign Strategist", "type": "main", "index": 0 }],
+        [{ "node": "Persona Builder", "type": "main", "index": 0 }],
+        [{ "node": "Content Optimizer", "type": "main", "index": 0 }],
+        [{ "node": "Email Campaign Generator", "type": "main", "index": 0 }],
+        [{ "node": "Schedule Optimizer", "type": "main", "index": 0 }],
+        [{ "node": "Error Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Content Generator": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Lead Scorer": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Competitor Analyzer": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Campaign Strategist": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Persona Builder": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Content Optimizer": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Email Campaign Generator": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Schedule Optimizer": {
+      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    },
+    "Format Response": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "1",
+  "meta": {
+    "instanceId": "automarketer-ai"
+  },
+  "tags": []
+}
