@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   Calendar,
@@ -37,7 +37,7 @@ const NavItem = ({
 }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
-  
+
   return (
     <Link
       to={to}
@@ -129,21 +129,65 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
             Platform
           </div>
-          <NavItem to="/" icon={<LayoutDashboard size={20} />} label="Overview" />
-          <NavItem to="/campaigns" icon={<Layers size={20} />} label="Campaigns" />
-          <NavItem to="/generate" icon={<Sparkles size={20} />} label="AI Studio" />
-          <NavItem to="/audience" icon={<User size={20} />} label="Audience Persona" />
-          <NavItem to="/competitors" icon={<Crosshair size={20} />} label="Competitors" />
-          <NavItem to="/email" icon={<Mail size={20} />} label="Email Marketing" />
-          <NavItem to="/leads" icon={<Users size={20} />} label="Lead Scoring" />
-          <NavItem to="/schedule" icon={<Calendar size={20} />} label="Scheduler" />
+          <NavItem
+            to="/"
+            icon={<LayoutDashboard size={20} />}
+            label="Overview"
+          />
+          <NavItem
+            to="/campaigns"
+            icon={<Layers size={20} />}
+            label="Campaigns"
+          />
+          <NavItem
+            to="/generate"
+            icon={<Sparkles size={20} />}
+            label="AI Studio"
+          />
+          <NavItem
+            to="/audience"
+            icon={<User size={20} />}
+            label="Audience Persona"
+          />
+          <NavItem
+            to="/competitors"
+            icon={<Crosshair size={20} />}
+            label="Competitors"
+          />
+          <NavItem
+            to="/email"
+            icon={<Mail size={20} />}
+            label="Email Marketing"
+          />
+          <NavItem
+            to="/leads"
+            icon={<Users size={20} />}
+            label="Lead Scoring"
+          />
+          <NavItem
+            to="/schedule"
+            icon={<Calendar size={20} />}
+            label="Scheduler"
+          />
 
           <div className="px-4 py-2 mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">
             System
           </div>
-          <NavItem to="/automation" icon={<Workflow size={20} />} label="Automation Hub" />
-          <NavItem to="/analytics" icon={<BarChart3 size={20} />} label="Analytics" />
-          <NavItem to="/settings" icon={<Settings size={20} />} label="Settings" />
+          <NavItem
+            to="/automation"
+            icon={<Workflow size={20} />}
+            label="Automation Hub"
+          />
+          <NavItem
+            to="/analytics"
+            icon={<BarChart3 size={20} />}
+            label="Analytics"
+          />
+          <NavItem
+            to="/settings"
+            icon={<Settings size={20} />}
+            label="Settings"
+          />
         </nav>
 
         <div className="p-4 border-t border-white/10 mx-4 mb-2">
@@ -300,9 +344,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {getPageTitle()}
           </h2>
           <div className="flex items-center gap-4">
-            <button 
-                onClick={() => navigate('/notifications')}
-                className="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/5 rounded-full"
+            <button
+              onClick={() => navigate("/notifications")}
+              className="relative p-2 text-slate-400 hover:text-white transition-colors hover:bg-white/5 rounded-full"
             >
               <Bell size={20} />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900 pointer-events-none"></span>

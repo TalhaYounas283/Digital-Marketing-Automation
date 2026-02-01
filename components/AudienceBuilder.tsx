@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { generateAudiencePersona } from "../services/geminiService";
-import { Persona } from "../types";
+import { generateAudiencePersona } from "@/services/geminiService";
+import { Persona } from "@/types";
 import {
   User,
   Loader2,

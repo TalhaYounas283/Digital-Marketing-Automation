@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Hexagon, ArrowRight } from 'lucide-react';
-import { Input } from './common/Input';
-import { Button } from './common/Button';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Hexagon, ArrowRight } from "lucide-react";
+import { Input } from "@/components/common/Input";
+import { Button } from "@/components/common/Button";
 
 export const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -17,8 +17,8 @@ export const Login: React.FC = () => {
     setIsLoading(true);
     // Simulate API call
     setTimeout(() => {
-      login(email, 'Talha Younas'); // Mock login
-      navigate('/');
+      login(email, "Talha Younas"); // Mock login
+      navigate("/");
       setIsLoading(false);
     }, 1000);
   };
@@ -31,23 +31,27 @@ export const Login: React.FC = () => {
             <Hexagon size={32} strokeWidth={1.5} />
           </div>
         </div>
-        
-        <h2 className="text-2xl font-bold text-center text-slate-900 font-display mb-2">Welcome Back</h2>
-        <p className="text-center text-slate-500 mb-8 text-sm">Sign in to your automation dashboard</p>
+
+        <h2 className="text-2xl font-bold text-center text-slate-900 font-display mb-2">
+          Welcome Back
+        </h2>
+        <p className="text-center text-slate-500 mb-8 text-sm">
+          Sign in to your automation dashboard
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <Input 
+          <Input
             label="Email Address"
-            type="email" 
+            type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="name@company.com"
           />
-          
-          <Input 
+
+          <Input
             label="Password"
-            type="password" 
+            type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -56,14 +60,22 @@ export const Login: React.FC = () => {
 
           <div className="flex items-center justify-between text-xs">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+              />
               <span className="text-slate-600">Remember me</span>
             </label>
-            <a href="#" className="text-indigo-600 hover:text-indigo-800 font-medium">Forgot password?</a>
+            <a
+              href="#"
+              className="text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              Forgot password?
+            </a>
           </div>
 
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             isLoading={isLoading}
             fullWidth
             size="lg"
@@ -75,7 +87,13 @@ export const Login: React.FC = () => {
         </form>
 
         <p className="text-center text-slate-400 text-xs mt-8">
-          Don't have an account? <Link to="/register" className="text-indigo-600 hover:text-indigo-800 font-bold">Create Account</Link>
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-indigo-600 hover:text-indigo-800 font-bold"
+          >
+            Create Account
+          </Link>
         </p>
       </div>
     </div>
