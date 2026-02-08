@@ -32,19 +32,19 @@ export const Profile: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-12">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in transition-colors duration-200 pb-12">
       {/* Page Header */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
           Account Settings
         </h1>
-        <p className="text-slate-500">
+        <p className="text-[var(--text-secondary)]">
           Manage your profile, preferences, and account security.
         </p>
       </div>
 
       {isSuccess && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-4 py-3 rounded-xl flex items-center gap-3 animate-fade-in">
           <CheckCircle2 size={20} className="text-emerald-500" />
           <span className="font-medium">Changes saved successfully!</span>
         </div>
@@ -56,9 +56,9 @@ export const Profile: React.FC = () => {
       >
         {/* Sidebar - Profile Picture */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm">
+          <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-8 text-center shadow-sm">
             <div className="relative group mx-auto w-32 h-32 mb-6">
-              <div className="w-full h-full rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center overflow-hidden">
+              <div className="w-full h-full rounded-full bg-[var(--bg-main)] border-2 border-[var(--border)] flex items-center justify-center overflow-hidden">
                 {profilePic ? (
                   <img
                     src={profilePic}
@@ -66,13 +66,13 @@ export const Profile: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User size={48} className="text-slate-300" />
+                  <User size={48} className="text-[var(--text-muted)]" />
                 )}
               </div>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 flex items-center justify-center bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full text-white cursor-pointer"
+                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full text-white cursor-pointer"
               >
                 <Camera size={24} />
               </button>
@@ -85,17 +85,21 @@ export const Profile: React.FC = () => {
               />
             </div>
 
-            <h3 className="font-bold text-slate-900 text-lg">Alex Marketing</h3>
-            <p className="text-slate-500 text-sm mb-6">Enterprise Plan</p>
+            <h3 className="font-bold text-[var(--text-primary)] text-lg">
+              Alex Marketing
+            </h3>
+            <p className="text-[var(--text-secondary)] text-sm mb-6">
+              Enterprise Plan
+            </p>
 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors"
+              className="w-full py-2.5 px-4 rounded-xl border border-[var(--border)] text-[var(--text-primary)] text-sm font-semibold hover:bg-[var(--bg-main)] transition-colors"
             >
               Change Photo
             </button>
-            <p className="mt-4 text-[11px] text-slate-400">
+            <p className="mt-4 text-[11px] text-[var(--text-muted)]">
               JPG, GIF or PNG. Max size of 800K
             </p>
           </div>
@@ -104,9 +108,9 @@ export const Profile: React.FC = () => {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
           {/* Profile Details */}
-          <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
+            <div className="px-8 py-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-main)] opacity-70">
+              <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <User size={18} className="text-blue-600" /> Personal
                 Information
               </h3>
@@ -114,85 +118,85 @@ export const Profile: React.FC = () => {
             <div className="p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">
+                  <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                     Full Name
                   </label>
                   <input
                     type="text"
                     defaultValue="Alex Marketing"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all text-slate-900"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     placeholder="Enter your name"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">
+                  <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                     Email Address
                   </label>
                   <div className="relative">
                     <Mail
                       size={18}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
                     />
                     <input
                       type="email"
                       defaultValue="alex@automarketer.com"
-                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all text-slate-900"
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                       placeholder="Email address"
                     />
                   </div>
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700 ml-1">
+                <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                   Workspace Name
                 </label>
                 <input
                   type="text"
                   defaultValue="Alex's Agency"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all text-slate-900"
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                 />
               </div>
             </div>
           </section>
 
           {/* Security */}
-          <section className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
+            <div className="px-8 py-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-main)] opacity-70">
+              <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Lock size={18} className="text-blue-600" /> Security & Password
               </h3>
             </div>
             <div className="p-8 space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">
+                  <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                     Current Password
                   </label>
                   <input
                     type="password"
                     autoComplete="current-password"
-                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 ml-1">
+                    <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                       New Password
                     </label>
                     <input
                       type="password"
                       autoComplete="new-password"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700 ml-1">
+                    <label className="text-sm font-semibold text-[var(--text-secondary)] ml-1">
                       Confirm New Password
                     </label>
                     <input
                       type="password"
                       autoComplete="new-password"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-4 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     />
                   </div>
                 </div>
@@ -203,7 +207,7 @@ export const Profile: React.FC = () => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
-              className="px-6 py-3 rounded-xl border border-slate-200 font-semibold text-slate-600 hover:bg-slate-50 transition-all text-sm"
+              className="px-6 py-3 rounded-xl border border-[var(--border)] font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-main)] transition-all text-sm"
             >
               Discard Changes
             </button>

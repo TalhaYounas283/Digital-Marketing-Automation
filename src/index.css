@@ -16,7 +16,7 @@
 
   /* Text */
   --text-primary: #0f172a;
-  --text-secondary: #64748b;
+  --text-secondary: #475569;
   --text-muted: #94a3b8;
   --text-inverse: #ffffff;
 
@@ -30,6 +30,30 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
 }
 
+.dark {
+  /* OLED Dark Palette */
+  --bg-main: #000000;
+  --bg-card: #0a0a0a;
+  --bg-sidebar: #000000;
+  --bg-sidebar-hover: #111111;
+
+  /* Text */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #000000;
+
+  /* Borders & Shadows */
+  --border: #1e293b;
+  --border-hover: #334155;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+
+  /* Primary Accent Adjustments */
+  --primary-light: rgba(37, 99, 235, 0.1);
+}
+
 body {
   margin: 0;
   font-family:
@@ -41,6 +65,9 @@ body {
   background-color: var(--bg-main);
   color: var(--text-primary);
   overflow-x: hidden;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Base Typography */
@@ -53,6 +80,12 @@ h6 {
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.025em;
+  transition: color 0.2s ease;
+}
+
+p {
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
 }
 
 /* Global Component Classes */

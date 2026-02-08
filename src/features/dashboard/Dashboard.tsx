@@ -32,14 +32,14 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in transition-colors duration-200">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">
             Dashboard Overview
           </h2>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-[var(--text-secondary)] text-sm mt-1">
             Track your marketing performance and key metrics
           </p>
         </div>
@@ -87,15 +87,17 @@ export const Dashboard: React.FC = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-12 gap-6">
         {/* Main Chart */}
-        <div className="col-span-12 lg:col-span-8 bg-white rounded-xl border border-slate-200 p-6">
+        <div className="col-span-12 lg:col-span-8 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] p-6 transition-colors duration-200">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                 Traffic Overview
               </h3>
-              <p className="text-sm text-slate-500">Website visits over time</p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Website visits over time
+              </p>
             </div>
-            <select className="px-3 py-2 text-sm border border-slate-200 rounded-lg text-slate-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <select className="px-3 py-2 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] bg-[var(--bg-card)] focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option>Last 7 Days</option>
               <option>Last 30 Days</option>
               <option>Last 90 Days</option>
@@ -116,30 +118,30 @@ export const Dashboard: React.FC = () => {
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#E2E8F0"
+                  stroke="var(--border)"
                   vertical={false}
                 />
                 <XAxis
                   dataKey="name"
-                  stroke="#94A3B8"
+                  stroke="var(--text-muted)"
                   tickLine={false}
                   axisLine={false}
                   tick={{ fontSize: 12 }}
                 />
                 <YAxis
-                  stroke="#94A3B8"
+                  stroke="var(--text-muted)"
                   tickLine={false}
                   axisLine={false}
                   tick={{ fontSize: 12 }}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #E2E8F0",
+                    backgroundColor: "var(--bg-card)",
+                    border: "1px solid var(--border)",
                     borderRadius: "8px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    boxShadow: "var(--shadow-md)",
                   }}
-                  itemStyle={{ color: "#0F172A", fontSize: "13px" }}
+                  itemStyle={{ color: "var(--text-primary)", fontSize: "13px" }}
                 />
                 <Area
                   type="monotone"
@@ -155,37 +157,39 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Recent Activity */}
-        <div className="col-span-12 lg:col-span-4 bg-white rounded-xl border border-slate-200 p-6">
+        <div className="col-span-12 lg:col-span-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] p-6 transition-colors duration-200">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-[var(--text-primary)]">
               Recent Activity
             </h3>
-            <p className="text-sm text-slate-500">Latest updates</p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Latest updates
+            </p>
           </div>
 
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--bg-main)] transition-colors cursor-pointer"
               >
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-900 truncate">
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                     Campaign #{100 + i} active
                   </p>
-                  <p className="text-xs text-slate-500 truncate">
+                  <p className="text-xs text-[var(--text-secondary)] truncate">
                     Performance: High engagement
                   </p>
                 </div>
-                <span className="text-xs text-slate-400">2h ago</span>
+                <span className="text-xs text-[var(--text-muted)]">2h ago</span>
               </div>
             ))}
           </div>
 
           <button
             onClick={() => navigate("/activity")}
-            className="w-full mt-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 rounded-lg transition-colors"
+            className="w-full mt-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-main)] border border-[var(--border)] rounded-lg transition-colors"
           >
             View All Activity
           </button>

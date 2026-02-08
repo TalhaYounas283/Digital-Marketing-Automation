@@ -17,7 +17,12 @@ import {
   Bell,
   Layers,
   User,
+  Sun,
+  Moon,
+  Search,
+  Fingerprint,
 } from "lucide-react";
+import { CommandPalette } from "../CommandPalette";
 
 const NavItem = ({
   to,
@@ -62,6 +67,20 @@ export const Layout: React.FC = () => {
     navigate("/login");
   };
 
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return document.documentElement.classList.contains("dark");
+  });
+
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
   const getPageTitle = () => {
     switch (location.pathname) {
       case "/":
@@ -94,15 +113,17 @@ export const Layout: React.FC = () => {
         return "Activity Log";
       case "/profile":
         return "Profile Settings";
+      case "/brand":
+        return "Brand Identity Hub";
       default:
         return "AutoMarketer";
     }
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-[var(--bg-main)] overflow-hidden transition-colors duration-200">
       {/* Sidebar - Desktop */}
-      <aside className="w-64 hidden md:flex flex-col bg-slate-800 border-r border-slate-700 shrink-0">
+      <aside className="w-64 hidden md:flex flex-col bg-[var(--bg-sidebar)] border-r border-slate-700 shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-slate-700">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow-lg shadow-blue-900/20">
@@ -165,9 +186,9 @@ export const Layout: React.FC = () => {
             label="Analytics"
           />
           <NavItem
-            to="/settings"
-            icon={<Settings size={18} />}
-            label="Settings"
+            to="/brand"
+            icon={<Fingerprint size={18} />}
+            label="Brand Hub"
           />
           <NavItem to="/profile" icon={<User size={18} />} label="Profile" />
         </nav>
@@ -198,40 +219,68 @@ export const Layout: React.FC = () => {
 
       {/* Mobile Content */}
       <div className="flex-1 flex flex-col min-w-0 h-full relative">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0 z-10 shadow-sm shadow-slate-200/50">
+        <header className="h-16 bg-[var(--bg-card)] border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0 z-10 shadow-sm transition-colors duration-200">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 text-slate-500 hover:text-slate-700 md:hidden"
+              className="p-2 text-slate-500 hover:text-[var(--text-primary)] md:hidden"
             >
               <Menu size={20} />
             </button>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h1 className="text-xl font-bold text-[var(--text-primary)] tracking-tight">
               {getPageTitle()}
             </h1>
           </div>
           <div className="flex items-center gap-4">
             <button
+              className="hidden md:flex items-center gap-2 px-3 py-1.5 text-slate-400 hover:text-blue-600 bg-[var(--bg-main)] border border-[var(--border)] rounded-lg text-sm transition-all"
+              onClick={() => {
+                const event = new KeyboardEvent("keydown", {
+                  key: "k",
+                  ctrlKey: true,
+                  metaKey: true,
+                  bubbles: true,
+                });
+                window.dispatchEvent(event);
+              }}
+            >
+              <Search size={16} />
+              <span>Search...</span>
+              <kbd className="hidden lg:inline-flex items-center gap-1 text-[10px] font-bold opacity-50">
+                <span className="text-xs">⌘</span>K
+              </kbd>
+            </button>
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 text-slate-400 hover:text-yellow-500 dark:hover:text-blue-400 transition-colors"
+              title={
+                isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
+              }
+            >
+              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
               onClick={() => navigate("/notifications")}
               className="p-2 text-slate-400 hover:text-blue-600 relative transition-colors"
             >
               <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[var(--bg-card)]"></span>
             </button>
             <button
               onClick={() => navigate("/profile")}
-              className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+              className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[var(--border)] flex items-center justify-center text-slate-500 hover:bg-[var(--bg-card)] transition-colors"
             >
               <User size={16} />
             </button>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6 bg-slate-50/50 custom-scrollbar">
+        <main className="flex-1 overflow-y-auto p-6 bg-[var(--bg-main)] custom-scrollbar transition-colors duration-200">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
         </main>
+        <CommandPalette />
       </div>
 
       {/* Mobile Menu Overlay */}

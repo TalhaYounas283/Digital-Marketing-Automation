@@ -27,7 +27,7 @@ export const Select: React.FC<SelectProps> = ({
   return (
     <div className={`${fullWidth ? "w-full" : "inline-block"} ${className}`}>
       {label && (
-        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-bold text-[var(--text-secondary)] opacity-70 uppercase tracking-wider mb-2 transition-colors">
           {label}
         </label>
       )}
@@ -49,7 +49,7 @@ export const Select: React.FC<SelectProps> = ({
             pr-10 
             appearance-none 
             cursor-pointer
-            focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500
+            focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
             ${error ? "border-rose-500" : ""}
           `}
           {...props}

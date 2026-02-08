@@ -80,6 +80,9 @@ const ActivityLog = lazy(() =>
 const Profile = lazy(() =>
   import("@/features/profile/Profile").then((m) => ({ default: m.Profile })),
 );
+const BrandHub = lazy(() =>
+  import("@/features/brand/BrandHub").then((m) => ({ default: m.BrandHub })),
+);
 
 const PageLoader = () => (
   <div className="h-full w-full flex items-center justify-center text-slate-400 min-h-[400px]">
@@ -125,7 +128,9 @@ const AppRoutes: React.FC = () => {
           <Route path="/reports" element={<Reports />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/activity" element={<ActivityLog />} />
+          <Route path="/activity" element={<ActivityLog />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/brand" element={<BrandHub />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

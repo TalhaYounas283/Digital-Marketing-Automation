@@ -25,8 +25,8 @@ export const Input: React.FC<InputProps> = ({
     rounded-lg 
     text-sm 
     transition-all
-    focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500
-    placeholder:text-slate-400
+    focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500
+    placeholder:text-[var(--text-muted)]
     ${icon ? "pl-10 pr-4" : "px-4"}
     ${error ? "border-rose-500 focus:border-rose-500 focus:ring-rose-500" : ""}
   `;
@@ -34,7 +34,7 @@ export const Input: React.FC<InputProps> = ({
   return (
     <div className={`${fullWidth ? "w-full" : "inline-block"} ${className}`}>
       {label && (
-        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-bold text-[var(--text-secondary)] opacity-70 uppercase tracking-wider mb-2 transition-colors">
           {label}
         </label>
       )}
