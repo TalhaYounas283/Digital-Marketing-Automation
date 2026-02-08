@@ -243,6 +243,9 @@ export const Layout: React.FC = () => {
               </button>
             </div>
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+              <div className="px-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+                Core Focus
+              </div>
               <NavItem
                 to="/"
                 icon={<LayoutDashboard size={18} />}
@@ -261,7 +264,74 @@ export const Layout: React.FC = () => {
                 label="Content Studio"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
+
+              <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+                Optimization
+              </div>
+              <NavItem
+                to="/audience"
+                icon={<User size={18} />}
+                label="Audience"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/competitors"
+                icon={<Crosshair size={18} />}
+                label="Competitors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/email"
+                icon={<Mail size={18} />}
+                label="Email"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/leads"
+                icon={<Users size={18} />}
+                label="Leads"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/schedule"
+                icon={<Calendar size={18} />}
+                label="Scheduler"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+
+              <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+                Intelligence
+              </div>
+              <NavItem
+                to="/automation"
+                icon={<Workflow size={18} />}
+                label="Automation"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/analytics"
+                icon={<BarChart3 size={18} />}
+                label="Analytics"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/settings"
+                icon={<Settings size={18} />}
+                label="Settings"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
             </nav>
+            <div className="p-4 border-t border-slate-700">
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="flex items-center gap-2 text-slate-400 hover:text-red-400 w-full text-sm font-medium px-3 py-2.5 hover:bg-slate-700/50 rounded-lg transition-colors"
+              >
+                <LogOut size={18} /> Sign Out
+              </button>
+            </div>
           </div>
         </div>
       )}
