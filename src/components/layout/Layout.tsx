@@ -92,6 +92,8 @@ export const Layout: React.FC = () => {
         return "Notifications";
       case "/activity":
         return "Activity Log";
+      case "/profile":
+        return "Profile Settings";
       default:
         return "AutoMarketer";
     }
@@ -167,6 +169,7 @@ export const Layout: React.FC = () => {
             icon={<Settings size={18} />}
             label="Settings"
           />
+          <NavItem to="/profile" icon={<User size={18} />} label="Profile" />
         </nav>
 
         <div className="p-4 border-t border-slate-700">
@@ -215,9 +218,12 @@ export const Layout: React.FC = () => {
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+            <button
+              onClick={() => navigate("/profile")}
+              className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+            >
               <User size={16} />
-            </div>
+            </button>
           </div>
         </header>
 
