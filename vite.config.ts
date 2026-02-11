@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   // Transform env into process.env pattern for compatibility
   const processEnv: Record<string, string> = {};
   Object.keys(env).forEach((key) => {
-    if (key.startsWith("REACT_APP_") || key === "GOOGLE_API_KEY") {
+    if (key.startsWith("REACT_APP_") || key === "HUGGINGFACE_API_TOKEN") {
       processEnv[`process.env.${key}`] = JSON.stringify(env[key]);
     }
   });

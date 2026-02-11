@@ -220,8 +220,8 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
               <Lightbulb size={20} className="text-blue-600 shrink-0" />
               <p className="text-xs text-blue-700 leading-relaxed">
-                Gemini AI will analyze search intent and keyword competitiveness
-                to suggest high-impact opportunities.
+                Kimi K2 AI will analyze search intent and keyword
+                competitiveness to suggest high-impact opportunities.
               </p>
             </div>
           </>

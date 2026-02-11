@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { generateAudiencePersona } from "@/services/geminiService";
+import { generateAudiencePersona } from "@/services/aiService";
 import { Persona } from "@/types";
 import {
   User,

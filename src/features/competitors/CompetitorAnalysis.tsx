@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { analyzeCompetitor } from "@/services/geminiService";
+import { analyzeCompetitor } from "@/services/aiService";
 import { SwotAnalysis } from "@/types";
 import {
   TrendingUp,

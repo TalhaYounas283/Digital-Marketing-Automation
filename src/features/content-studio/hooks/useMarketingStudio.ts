@@ -12,7 +12,7 @@ import {
   generateCampaignStrategy,
   optimizeContent,
   generateSeoKeywords,
-} from "@/services/geminiService";
+} from "@/services/aiService";
 
 export type ContentTab = "quick" | "campaign" | "optimize" | "seo";
 

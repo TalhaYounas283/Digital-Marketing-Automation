@@ -3,26 +3,24 @@ import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
-  Calendar,
   BarChart3,
   Settings,
   LogOut,
   Menu,
   X,
   Sparkles,
-  Mail,
   Users,
-  Workflow,
-  Crosshair,
-  Bell,
   Layers,
   User,
   Sun,
   Moon,
   Search,
-  Fingerprint,
+  Calendar,
+  FileText,
+  Mail,
 } from "lucide-react";
 import { CommandPalette } from "../CommandPalette";
+import { KimiChatbot } from "../KimiChatbot";
 
 const NavItem = ({
   to,
@@ -88,33 +86,21 @@ export const Layout: React.FC = () => {
       case "/campaigns":
         return "Campaigns";
       case "/generate":
-        return "Content Generator";
-      case "/audience":
-        return "Audience Builder";
-      case "/competitors":
-        return "Competitor Analysis";
+        return "AI Content Generator";
+      case "/calendar":
+        return "Content Calendar";
+      case "/templates":
+        return "Template Library";
       case "/email":
-        return "Email Marketing";
+        return "Email Campaigns";
       case "/leads":
         return "Lead Management";
-      case "/schedule":
-        return "Scheduler";
-      case "/automation":
-        return "Automation";
       case "/analytics":
         return "Analytics";
       case "/settings":
         return "Settings";
-      case "/reports":
-        return "Reports";
-      case "/notifications":
-        return "Notifications";
-      case "/activity":
-        return "Activity Log";
       case "/profile":
         return "Profile Settings";
-      case "/brand":
-        return "Brand Identity Hub";
       default:
         return "AutoMarketer";
     }
@@ -137,7 +123,7 @@ export const Layout: React.FC = () => {
 
         <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
           <div className="px-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-            Core Focus
+            Main
           </div>
           <NavItem
             to="/"
@@ -152,45 +138,42 @@ export const Layout: React.FC = () => {
           <NavItem
             to="/generate"
             icon={<Sparkles size={18} />}
-            label="Content Studio"
+            label="AI Content"
           />
 
           <div className="px-3 mt-8 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-            Optimization
+            Content
           </div>
-          <NavItem to="/audience" icon={<User size={18} />} label="Audience" />
           <NavItem
-            to="/competitors"
-            icon={<Crosshair size={18} />}
-            label="Competitors"
-          />
-          <NavItem to="/email" icon={<Mail size={18} />} label="Email" />
-          <NavItem to="/leads" icon={<Users size={18} />} label="Leads" />
-          <NavItem
-            to="/schedule"
+            to="/calendar"
             icon={<Calendar size={18} />}
-            label="Scheduler"
+            label="Calendar"
+          />
+          <NavItem
+            to="/templates"
+            icon={<FileText size={18} />}
+            label="Templates"
+          />
+          <NavItem
+            to="/email"
+            icon={<Mail size={18} />}
+            label="Email Campaigns"
           />
 
           <div className="px-3 mt-8 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-            Intelligence
+            Growth
           </div>
-          <NavItem
-            to="/automation"
-            icon={<Workflow size={18} />}
-            label="Automation"
-          />
+          <NavItem to="/leads" icon={<Users size={18} />} label="Leads" />
           <NavItem
             to="/analytics"
             icon={<BarChart3 size={18} />}
             label="Analytics"
           />
           <NavItem
-            to="/brand"
-            icon={<Fingerprint size={18} />}
-            label="Brand Hub"
+            to="/settings"
+            icon={<Settings size={18} />}
+            label="Settings"
           />
-          <NavItem to="/profile" icon={<User size={18} />} label="Profile" />
         </nav>
 
         <div className="p-4 border-t border-slate-700">
@@ -260,13 +243,6 @@ export const Layout: React.FC = () => {
               {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
             </button>
             <button
-              onClick={() => navigate("/notifications")}
-              className="p-2 text-slate-400 hover:text-blue-600 relative transition-colors"
-            >
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full border-2 border-[var(--bg-card)]"></span>
-            </button>
-            <button
               onClick={() => navigate("/profile")}
               className="w-8 h-8 rounded-full bg-[var(--bg-main)] border border-[var(--border)] flex items-center justify-center text-slate-500 hover:bg-[var(--bg-card)] transition-colors"
             >
@@ -299,7 +275,7 @@ export const Layout: React.FC = () => {
             </div>
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
               <div className="px-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                Core Focus
+                Main
               </div>
               <NavItem
                 to="/"
@@ -316,51 +292,39 @@ export const Layout: React.FC = () => {
               <NavItem
                 to="/generate"
                 icon={<Sparkles size={18} />}
-                label="Content Studio"
+                label="AI Content"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
 
               <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                Optimization
+                Content
               </div>
               <NavItem
-                to="/audience"
-                icon={<User size={18} />}
-                label="Audience"
+                to="/calendar"
+                icon={<Calendar size={18} />}
+                label="Calendar"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
               <NavItem
-                to="/competitors"
-                icon={<Crosshair size={18} />}
-                label="Competitors"
+                to="/templates"
+                icon={<FileText size={18} />}
+                label="Templates"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
               <NavItem
                 to="/email"
                 icon={<Mail size={18} />}
-                label="Email"
-                onClick={() => setIsMobileMenuOpen(false)}
-              />
-              <NavItem
-                to="/leads"
-                icon={<Users size={18} />}
-                label="Leads"
-                onClick={() => setIsMobileMenuOpen(false)}
-              />
-              <NavItem
-                to="/schedule"
-                icon={<Calendar size={18} />}
-                label="Scheduler"
+                label="Email Campaigns"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
 
               <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
-                Intelligence
+                Growth
               </div>
               <NavItem
-                to="/automation"
-                icon={<Workflow size={18} />}
-                label="Automation"
+                to="/leads"
+                icon={<Users size={18} />}
+                label="Leads"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
               <NavItem
@@ -390,6 +354,7 @@ export const Layout: React.FC = () => {
           </div>
         </div>
       )}
+      <KimiChatbot />
     </div>
   );
 };

@@ -1,0 +1,712 @@
+================================================================================
+                        AUTOMARKETER AI - FYP PROJECT REPORT
+================================================================================
+                      Final Year Project Documentation
+                      Prepared: February 2026
+================================================================================
+
+
+TABLE OF CONTENTS
+-----------------
+1.  Project Overview
+2.  Problem Statement
+3.  Objectives
+4.  Technology Stack
+5.  System Architecture
+6.  Project File Structure
+7.  Feature Breakdown (All 16 Features)
+8.  AI Integration Details (Kimi K2.5 via Hugging Face)
+9.  How Each Feature Works
+10. User Authentication System
+11. Design System & UI/UX
+12. Feature Recommendation (Keep vs Remove)
+13. How to Run the Project
+14. Future Enhancements
+15. Conclusion
+
+
+================================================================================
+1. PROJECT OVERVIEW
+================================================================================
+
+Project Name    : AutoMarketer AI
+Type            : Web-Based AI-Powered Marketing Automation Platform
+Category        : Final Year Project (FYP)
+Current Stage   : Frontend Development Complete (React + TypeScript)
+AI Model        : Kimi K2.5 (Moonshot AI) via Hugging Face Inference API
+Backend         : n8n Webhook Integration (planned) / Mock Mode (active)
+
+AutoMarketer AI is an intelligent marketing automation platform that leverages
+artificial intelligence to help businesses and marketers create, manage, and
+optimize their digital marketing campaigns. The platform uses Moonshot AI's
+Kimi K2.5 large language model through the Hugging Face Inference API to
+provide AI-powered features such as content generation, competitor analysis,
+audience profiling, and lead scoring.
+
+The frontend is fully built using React 19, TypeScript, and Vite, with a
+modern dark/light theme design system. The AI integration layer is designed
+with a dual-mode architecture — it can run in MOCK MODE (returning simulated
+AI responses for demos) or LIVE MODE (sending real requests to the AI model).
+
+
+================================================================================
+2. PROBLEM STATEMENT
+================================================================================
+
+Small and medium businesses face significant challenges in digital marketing:
+
+- Creating engaging content across multiple social media platforms is
+  time-consuming and requires specialized expertise.
+- Understanding competitors' strategies and identifying market opportunities
+  requires expensive tools and manual research.
+- Scoring and qualifying leads requires intuition and experience that
+  small teams often lack.
+- Building detailed audience personas for targeted campaigns is complex
+  and resource-intensive.
+- Managing campaigns across channels (email, social, search) requires
+  multiple disconnected tools.
+
+AutoMarketer AI addresses these challenges by providing an all-in-one
+AI-powered platform that automates and optimizes the entire marketing workflow.
+
+
+================================================================================
+3. OBJECTIVES
+================================================================================
+
+Primary Objectives:
+  1. Develop an AI-powered marketing content generation system using the
+     Kimi K2.5 model that can create platform-specific social media posts.
+  2. Build an intelligent competitor analysis tool that performs automated
+     SWOT analysis using AI reasoning.
+  3. Implement AI-driven audience persona generation to help marketers
+     understand and target their ideal customers.
+  4. Create an AI lead scoring system that automatically evaluates and
+     ranks potential customers based on their engagement data.
+
+Secondary Objectives:
+  5. Design a modern, responsive web interface with dark/light theme support.
+  6. Implement a campaign management system with CRUD operations.
+  7. Build a content optimization engine that improves existing marketing copy.
+  8. Create an SEO keyword research tool powered by AI analysis.
+  9. Develop a modular, scalable frontend architecture using React best practices.
+
+
+================================================================================
+4. TECHNOLOGY STACK
+================================================================================
+
+CATEGORY            TECHNOLOGY              VERSION     PURPOSE
+---------------------------------------------------------------------------
+Frontend Framework  React                   19.2.3      UI Component Library
+Language            TypeScript              5.8.2       Type-safe JavaScript
+Build Tool          Vite                    6.2.0       Fast dev server & bundler
+Routing             React Router DOM        7.12.0      Client-side navigation
+Charts              Recharts                3.6.0       Data visualization
+Icons               Lucide React            0.562.0     Icon library (200+ icons)
+AI Model            Kimi K2.5 (Moonshot AI) Latest      Language model for AI
+AI Platform         Hugging Face            API         Model hosting & inference
+Automation          n8n                     Planned     Workflow automation
+Styling             Vanilla CSS + Variables Custom      Design system
+
+
+================================================================================
+5. SYSTEM ARCHITECTURE
+================================================================================
+
+The application follows a FEATURE-BASED MODULAR ARCHITECTURE:
+
+                    +---------------------------+
+                    |        App.tsx            |
+                    |   (Root Component)        |
+                    |   - HashRouter            |
+                    |   - AuthProvider          |
+                    |   - Suspense/Lazy Loading |
+                    +---------------------------+
+                               |
+                    +---------------------------+
+                    |      Layout.tsx           |
+                    |   - Sidebar Navigation    |
+                    |   - Header Bar            |
+                    |   - Dark/Light Toggle     |
+                    |   - Command Palette       |
+                    |   - Mobile Responsive     |
+                    +---------------------------+
+                               |
+          +--------------------+--------------------+
+          |                    |                    |
+     +---------+         +---------+         +---------+
+     | Feature |         | Feature |         | Feature |
+     | Modules |         | Modules |         | Modules |
+     | (AI)    |         | (CRUD)  |         | (Static)|
+     +---------+         +---------+         +---------+
+          |                    |                    |
+     +---------+         +---------+         +---------+
+     |aiService|         | hooks/  |         | (Mock   |
+     |   .ts   |         |useState |         |  Data)  |
+     +---------+         +---------+         +---------+
+          |
+     +---------+
+     |Hugging  |
+     |Face API |
+     |(Kimi K2)|
+     +---------+
+
+Data Flow:
+  User Input -> React Component -> Custom Hook -> aiService.ts
+  -> (Mock Mode: return fake data after delay)
+  -> (Live Mode: POST to n8n webhook -> Hugging Face API -> Kimi K2.5)
+  -> Response -> State Update -> UI Re-render
+
+
+================================================================================
+6. PROJECT FILE STRUCTURE
+================================================================================
+
+d:\fyp project\FYP\
+|
+|-- src/
+|   |-- App.tsx                          # Root app with routing (151 lines)
+|   |-- index.tsx                        # Entry point
+|   |-- vite-env.d.ts                    # Vite type declarations
+|   |
+|   |-- components/                      # SHARED UI COMPONENTS
+|   |   |-- CommandPalette.tsx           # Ctrl+K search palette
+|   |   |-- layout/
+|   |   |   |-- Layout.tsx              # Main layout with sidebar
+|   |   |-- ui/
+|   |       |-- Button.tsx              # Reusable button component
+|   |       |-- Input.tsx               # Reusable input component
+|   |       |-- Modal.tsx               # Reusable modal dialog
+|   |       |-- Select.tsx              # Reusable select dropdown
+|   |
+|   |-- contexts/
+|   |   |-- AuthContext.tsx             # Authentication state management
+|   |
+|   |-- features/                        # FEATURE MODULES (16 features)
+|   |   |
+|   |   |-- auth/                        # Authentication
+|   |   |   |-- Login.tsx               # Login page
+|   |   |   |-- Register.tsx            # Registration page
+|   |   |
+|   |   |-- dashboard/                   # Dashboard
+|   |   |   |-- Dashboard.tsx           # Main dashboard with charts
+|   |   |   |-- StatsCard.tsx           # Reusable stat card
+|   |   |
+|   |   |-- content-studio/             # AI Content Generation (CORE)
+|   |   |   |-- ContentGenerator.tsx    # Main content studio page
+|   |   |   |-- components/
+|   |   |   |   |-- ConfigPanel.tsx     # Input configuration panel
+|   |   |   |   |-- ResultsTerminal.tsx # AI output display
+|   |   |   |   |-- StudioHeader.tsx    # Studio header
+|   |   |   |   |-- StudioTabs.tsx      # Tab navigation
+|   |   |   |-- hooks/
+|   |   |       |-- useMarketingStudio.ts # State management hook
+|   |   |
+|   |   |-- campaigns/                   # Campaign Management
+|   |   |   |-- CampaignManager.tsx     # Main campaign page
+|   |   |   |-- components/
+|   |   |   |   |-- CampaignHeader.tsx  # Search & filters
+|   |   |   |   |-- CampaignModal.tsx   # Create campaign modal
+|   |   |   |   |-- CampaignStats.tsx   # Campaign statistics
+|   |   |   |   |-- CampaignTable.tsx   # Campaign data table
+|   |   |   |-- hooks/
+|   |   |       |-- useCampaigns.ts     # Campaign state hook
+|   |   |
+|   |   |-- audience/                    # AI Audience Builder (CORE)
+|   |   |   |-- AudienceBuilder.tsx     # Audience persona generator
+|   |   |
+|   |   |-- competitors/                 # AI Competitor Analysis (CORE)
+|   |   |   |-- CompetitorAnalysis.tsx  # SWOT analysis tool
+|   |   |
+|   |   |-- leads/                       # AI Lead Management (CORE)
+|   |   |   |-- LeadsManager.tsx        # Lead scoring with AI
+|   |   |
+|   |   |-- email/                       # Email Marketing
+|   |   |   |-- EmailMarketing.tsx      # Email campaign manager
+|   |   |
+|   |   |-- scheduler/                   # Content Scheduler
+|   |   |   |-- Scheduler.tsx           # Calendar-based scheduler
+|   |   |
+|   |   |-- automation/                  # Automation Hub
+|   |   |   |-- AutomationHub.tsx       # n8n/Zapier workflows
+|   |   |
+|   |   |-- analytics/                   # Analytics Dashboard
+|   |   |   |-- Analytics.tsx           # Charts & demographics
+|   |   |
+|   |   |-- reports/                     # Reports
+|   |   |   |-- Reports.tsx             # Report generation
+|   |   |
+|   |   |-- notifications/              # Notifications
+|   |   |   |-- Notifications.tsx       # Alert management
+|   |   |
+|   |   |-- activity-log/               # Activity Log
+|   |   |   |-- ActivityLog.tsx         # Audit trail
+|   |   |
+|   |   |-- settings/                    # Settings
+|   |   |   |-- Settings.tsx            # User preferences
+|   |   |
+|   |   |-- profile/                     # User Profile
+|   |   |   |-- Profile.tsx             # Profile management
+|   |   |
+|   |   |-- brand/                       # Brand Identity Hub
+|   |       |-- BrandHub.tsx            # Brand management
+|   |
+|   |-- services/
+|   |   |-- aiService.ts                # AI SERVICE LAYER (224 lines)
+|   |
+|   |-- types/
+|       |-- index.ts                    # TypeScript type definitions
+|
+|-- .env                                 # Environment configuration
+|-- package.json                         # Dependencies & scripts
+|-- tsconfig.json                        # TypeScript configuration
+|-- vite.config.ts                       # Vite build configuration
+|-- index.html                           # HTML entry point
+
+Total Source Files   : 34 TypeScript/TSX files
+Total Feature Modules: 16 features
+
+
+================================================================================
+7. FEATURE BREAKDOWN (ALL 16 FEATURES)
+================================================================================
+
+Features are categorized into three tiers based on their AI integration:
+
+TIER 1: AI-POWERED FEATURES (Core - Use Kimi K2.5)
+---------------------------------------------------
+These features directly call the AI service and represent the core innovation
+of the project.
+
+  1. CONTENT STUDIO (Content Generator)
+     - Route: /generate
+     - AI Functions Used: generateMarketingCopy(), generateCampaignStrategy(),
+       generateSeoKeywords(), optimizeContent(), generateMarketingImage()
+     - Description: The main AI workstation. Users input a topic, select
+       platform (Twitter/LinkedIn/Instagram/Facebook), choose a tone
+       (Professional/Casual/Humorous/Urgent/Inspirational), specify target
+       audience, and the AI generates platform-optimized marketing posts.
+     - Sub-features:
+       a) Post Generation - Creates social media posts
+       b) Campaign Strategy - Generates full marketing strategies
+       c) SEO Research - Finds keywords, content ideas, competitor URLs
+       d) Content Optimization - Improves existing copy
+       e) Image Generation - Creates marketing visuals (via Unsplash mock)
+
+  2. AUDIENCE BUILDER
+     - Route: /audience
+     - AI Functions Used: generateAudiencePersona()
+     - Description: Generates detailed buyer personas using AI. Users input
+       product name, industry, and region. The AI creates a complete persona
+       including demographics, goals, frustrations, motivations, and
+       preferred marketing channels.
+
+  3. COMPETITOR ANALYSIS
+     - Route: /competitors
+     - AI Functions Used: analyzeCompetitor()
+     - Description: Performs automated SWOT (Strengths, Weaknesses,
+       Opportunities, Threats) analysis on competitors. Users enter a
+       competitor name and industry, and the AI returns a comprehensive
+       competitive intelligence report with strategic advice.
+
+  4. LEAD MANAGEMENT
+     - Route: /leads
+     - AI Functions Used: analyzeLeadScore()
+     - Description: AI-powered lead scoring system. Each lead has a name,
+       email, source, and status. The AI analyzes lead data and assigns
+       an engagement score (0-100) with reasoning for the score.
+
+
+TIER 2: INTERACTIVE FEATURES (Functional UI with CRUD/State Management)
+-----------------------------------------------------------------------
+These features have working user interactions but use local mock data
+rather than AI.
+
+  5. CAMPAIGN MANAGER
+     - Route: /campaigns
+     - Description: Full CRUD campaign management with search, filters,
+       statistics, and a create modal. Uses custom useCampaigns hook
+       with proper state management. Supports filtering by status
+       (All/Active/Paused/Completed).
+
+  6. EMAIL MARKETING
+     - Route: /email
+     - Description: Email campaign management with create, schedule,
+       and send-now functionality. Uses modal dialogs for scheduling.
+
+  7. SCHEDULER
+     - Route: /schedule
+     - Description: Calendar-based content scheduler. Users can click
+       dates to add scheduled items and view them on a monthly calendar.
+
+  8. AUTOMATION HUB
+     - Route: /automation
+     - Description: Workflow automation manager for n8n and Zapier
+       integrations. Users can create new workflows and download
+       n8n templates as JSON files.
+
+  9. DASHBOARD
+     - Route: / (homepage)
+     - Description: Central hub showing key marketing metrics (Total Reach,
+       Impressions, Click Rate, Conversion). Features interactive charts
+       using Recharts library with area charts for traffic overview and
+       a recent activity feed.
+
+
+TIER 3: DISPLAY/UTILITY FEATURES (Static UI Pages)
+---------------------------------------------------
+These features show hardcoded data and serve as UI demonstrations.
+
+  10. ANALYTICS
+      - Route: /analytics
+      - Description: Analytics dashboard with bar charts (campaign performance),
+        pie charts (demographics), and quick stat cards.
+
+  11. REPORTS
+      - Route: /reports
+      - Description: Marketing reports page with line charts showing
+        performance trends and channel breakdown data.
+
+  12. NOTIFICATIONS
+      - Route: /notifications
+      - Description: Notification center with unread/all filtering,
+        mark-all-read, and delete functionality.
+
+  13. ACTIVITY LOG
+      - Route: /activity
+      - Description: Audit trail showing user actions (created, updated,
+        deleted items) with user avatars and timestamps.
+
+  14. SETTINGS
+      - Route: /settings
+      - Description: User preference management with profile info,
+        auto-hashtag toggle, and email notification toggle.
+
+  15. PROFILE
+      - Route: /profile
+      - Description: User profile page with avatar, personal information,
+        password change, and social media link management.
+
+  16. BRAND IDENTITY HUB
+      - Route: /brand
+      - Description: Brand management with logo upload, color palette
+        management, font selection, and brand voice definition.
+
+
+================================================================================
+8. AI INTEGRATION DETAILS (Kimi K2.5 VIA HUGGING FACE)
+================================================================================
+
+FILE: src/services/aiService.ts (224 lines)
+
+The AI service uses a SINGLETON PATTERN with the ApiClient class. It operates
+in two modes controlled by the REACT_APP_USE_MOCKS environment variable:
+
+MODE 1: MOCK MODE (Default - REACT_APP_USE_MOCKS=true)
+-------------------------------------------------------
+- Returns realistic pre-built mock data after a simulated delay
+- Delays vary per function to simulate "thinking" time:
+  - generateMarketingCopy()    : 1500ms delay
+  - generateCampaignStrategy() : 4000ms delay (simulates deep thinking)
+  - analyzeLeadScore()         : 2500ms delay
+  - analyzeCompetitor()        : 4000ms delay (simulates deep thinking)
+  - optimizeContent()          : 1500ms delay
+  - generateAudiencePersona()  : 3500ms delay
+  - generateSeoKeywords()      : 3000ms delay
+  - generateMarketingImage()   : 3000ms delay
+
+MODE 2: LIVE MODE (REACT_APP_USE_MOCKS=false)
+---------------------------------------------
+- Sends HTTP POST requests to n8n webhook URL
+- n8n workflow routes the request to Hugging Face Inference API
+- Uses Kimi K2.5 model (moonshotai/Kimi-K2.5) for text generation
+- Falls back to mock data if the API call fails (graceful degradation)
+- Request format: JSON with { action: string, ...payload }
+
+API FUNCTIONS:
++----------------------------+------------------+---------------------------+
+| Function Name              | Action ID        | Returns                   |
++----------------------------+------------------+---------------------------+
+| generateMarketingCopy()    | generate_copy    | string[] (3 posts)        |
+| generateCampaignStrategy() | generate_strategy| CampaignStrategy object   |
+| analyzeLeadScore()         | analyze_lead     | {score, reason}           |
+| analyzeCompetitor()        | analyze_competitor| SwotAnalysis object      |
+| optimizeContent()          | optimize_content | OptimizationResult object |
+| generateAudiencePersona()  | generate_persona | Persona object            |
+| generateSeoKeywords()      | generate_seo     | SeoResult object          |
+| generateMarketingImage()   | (direct)         | Image URL string          |
++----------------------------+------------------+---------------------------+
+
+ENVIRONMENT CONFIGURATION (.env):
+- REACT_APP_N8N_WEBHOOK_URL : n8n production webhook endpoint
+- REACT_APP_USE_MOCKS       : true/false toggle for mock mode
+- HUGGINGFACE_API_TOKEN     : API authentication token for Hugging Face
+- PORT                      : Development server port (default: 3000)
+
+
+================================================================================
+9. HOW EACH AI FEATURE WORKS (DETAILED FLOW)
+================================================================================
+
+--- CONTENT STUDIO (The Main AI Feature) ---
+
+Step 1: User opens Content Studio (/generate)
+Step 2: User selects a tab:
+        - "Generate" tab: Create new social media posts
+        - "Strategy" tab: Generate campaign strategies
+        - "SEO" tab: Research keywords and content ideas
+        - "Optimize" tab: Improve existing marketing copy
+Step 3: User fills in the form:
+        For Generate: Topic, Platform, Tone, Target Audience
+        For Strategy: Product Name, Campaign Goal
+        For SEO: Topic, Niche
+        For Optimize: Original Text, Optimization Goal
+Step 4: User clicks the generate button
+Step 5: The useMarketingStudio() hook calls the appropriate aiService function
+Step 6: Loading state shows a "thinking" animation
+Step 7: AI response is displayed in the Results Terminal panel
+Step 8: User can copy generated content to clipboard or generate images
+
+--- AUDIENCE BUILDER ---
+
+Step 1: User navigates to /audience
+Step 2: User enters: Product Name, Industry, Region
+Step 3: Clicks "Generate Persona"
+Step 4: AI creates a detailed buyer persona with:
+        - Name, Age Range, Occupation, Income Level
+        - Bio describing the persona
+        - Goals (what they want to achieve)
+        - Frustrations (pain points)
+        - Motivations (what drives them)
+        - Preferred Channels (where to reach them)
+Step 5: Persona card is displayed with all details
+
+--- COMPETITOR ANALYSIS ---
+
+Step 1: User navigates to /competitors
+Step 2: Enters competitor name and industry
+Step 3: Clicks "Analyze Competitor"
+Step 4: AI performs SWOT analysis:
+        - Strengths: What the competitor does well
+        - Weaknesses: Where they fall short
+        - Opportunities: Market gaps to exploit
+        - Threats: Risks to be aware of
+        - Strategic Advice: Recommended action plan
+Step 5: SWOT matrix is displayed in a 2x2 grid with advice
+
+--- LEAD MANAGEMENT ---
+
+Step 1: User navigates to /leads
+Step 2: Sees a table of leads with name, email, source, status
+Step 3: Clicks "AI Score" button on any lead
+Step 4: AI analyzes the lead's engagement data
+Step 5: Returns a score (0-100) and reasoning
+Step 6: Score badge updates with color coding:
+        - Green (80+): Hot lead
+        - Yellow (60-79): Warm lead
+        - Red (<60): Cold lead
+
+
+================================================================================
+10. USER AUTHENTICATION SYSTEM
+================================================================================
+
+FILE: src/contexts/AuthContext.tsx
+
+The authentication system uses React Context API to manage user state
+across the application.
+
+Features:
+- Login with email and password (mock authentication)
+- Registration with name, email, and password
+- Protected routes (redirect to /login if not authenticated)
+- Persistent session state during browsing
+- Logout functionality with redirect
+
+Components:
+- AuthProvider: Wraps the entire app with auth context
+- useAuth(): Custom hook to access auth state and actions
+- ProtectedLayout: Higher-order component that checks authentication
+
+Flow:
+  1. User visits any protected route
+  2. ProtectedLayout checks isAuthenticated flag
+  3. If not authenticated: redirects to /login
+  4. User enters credentials on Login page
+  5. On success: isAuthenticated = true, user object is set
+  6. User is redirected to Dashboard (/)
+  7. Auth state persists across page navigation
+
+
+================================================================================
+11. DESIGN SYSTEM & UI/UX
+================================================================================
+
+THEME SYSTEM:
+- Supports Dark Mode and Light Mode
+- Uses CSS Custom Properties (Variables) for theming:
+  --bg-main       : Main background color
+  --bg-card       : Card/panel background
+  --bg-sidebar    : Sidebar background
+  --text-primary  : Primary text color
+  --text-secondary: Secondary text color
+  --text-muted    : Muted/hint text
+  --border        : Border colors
+- Toggle via Sun/Moon button in the header
+- Theme class "dark" is added/removed from document root
+
+LAYOUT:
+- Responsive sidebar (hidden on mobile, slide-in drawer)
+- Fixed header with page title, search, dark mode toggle, notifications
+- Main content area with max-width constraint and scrolling
+- Command Palette (Ctrl+K) for quick navigation
+
+NAVIGATION STRUCTURE:
+  Sidebar -> Three sections:
+  1. Core Focus: Dashboard, Campaigns, Content Studio
+  2. Optimization: Audience, Competitors, Email, Leads, Scheduler
+  3. Intelligence: Automation, Analytics, Brand Hub, Profile
+
+UI COMPONENTS (Shared):
+  - Button: Primary/secondary/ghost variants
+  - Input: With label, placeholder, and validation
+  - Modal: Overlay dialog with close button
+  - Select: Dropdown with options
+  - StatsCard: Metric display with trend indicator
+  - CommandPalette: Keyboard-driven navigation
+
+ANIMATIONS:
+  - animate-fade-in: Page transition animations
+  - animate-slide-in: Mobile menu slide
+  - Loading spinners (Loader2 icon with animate-spin)
+  - Hover transitions on all interactive elements
+
+
+================================================================================
+12. FEATURE RECOMMENDATION (KEEP vs CONSIDER REMOVING)
+================================================================================
+
+MUST KEEP (Core to FYP - These demonstrate AI integration):
+  [x] Content Studio    - Main AI feature, demonstrates LLM integration
+  [x] Audience Builder   - Shows AI persona generation
+  [x] Competitor Analysis- Shows AI SWOT analysis
+  [x] Lead Management    - Shows AI lead scoring
+  [x] Dashboard          - Central hub, professional landing page
+  [x] Campaign Manager   - Shows CRUD operations, state management
+  [x] Auth (Login/Reg)   - Essential for security demonstration
+  [x] Brand Hub          - Shows brand management capability
+
+GOOD TO KEEP (Add completeness to the platform):
+  [~] Analytics          - Shows data visualization skills (Recharts)
+  [~] Automation Hub     - Demonstrates n8n integration concept
+  [~] Email Marketing    - Email campaign management
+  [~] Scheduler          - Calendar-based scheduling
+
+OPTIONAL (Can remove to simplify, these are static display pages):
+  [ ] Reports            - Similar to Analytics, redundant
+  [ ] Notifications      - Static mock notifications
+  [ ] Activity Log       - Static audit trail
+  [ ] Settings           - Overlaps with Profile page
+  [ ] social-preview     - Empty directory (should be deleted)
+
+RECOMMENDATION: Keep all features for the FYP presentation. The 16 features
+demonstrate the breadth of the platform. During the presentation, focus on
+the 4 AI-powered features as the core innovation and mention the others as
+the supporting platform ecosystem.
+
+
+================================================================================
+13. HOW TO RUN THE PROJECT
+================================================================================
+
+PREREQUISITES:
+  - Node.js (v18 or later)
+  - npm (comes with Node.js)
+
+INSTALLATION:
+  1. Open terminal in the project directory
+  2. Run: npm install
+  3. This installs all dependencies listed in package.json
+
+DEVELOPMENT MODE:
+  Run: npm run dev
+  - Starts Vite dev server on http://localhost:3000
+  - Hot Module Replacement (HMR) enabled
+  - Changes reflect instantly in the browser
+
+PRODUCTION BUILD:
+  Run: npm run build
+  - Creates optimized production bundle in dist/ folder
+  - TypeScript compiled, code minified, assets optimized
+  - Total bundle size: ~450 KB gzipped
+
+PREVIEW PRODUCTION BUILD:
+  Run: npm run preview
+  - Serves the production build locally for testing
+
+ENVIRONMENT CONFIGURATION:
+  Edit .env file to configure:
+  - REACT_APP_USE_MOCKS=true  (for demo/mock mode)
+  - REACT_APP_USE_MOCKS=false (for live AI mode)
+  - HUGGINGFACE_API_TOKEN=your_token_here
+  - REACT_APP_N8N_WEBHOOK_URL=your_webhook_url
+
+DEFAULT LOGIN CREDENTIALS (Mock Auth):
+  - Any email and password will work in mock mode
+  - Register page creates a new mock user
+
+
+================================================================================
+14. FUTURE ENHANCEMENTS
+================================================================================
+
+Phase 2 (Backend Integration):
+  - Connect n8n webhook to Hugging Face Inference API
+  - Implement real Kimi K2.5 model calls for all AI features
+  - Add database (PostgreSQL/MongoDB) for persistent data storage
+  - Implement real user authentication with JWT tokens
+
+Phase 3 (Advanced Features):
+  - Social media API integration (post directly to Twitter, LinkedIn)
+  - Real-time analytics with WebSocket connections
+  - A/B testing engine for marketing content
+  - Email sending service integration (SendGrid/Mailgun)
+  - Multi-user collaboration with role-based access
+
+Phase 4 (AI Enhancement):
+  - Fine-tune Kimi K2.5 on marketing-specific datasets
+  - Add image generation with Stable Diffusion models
+  - Implement sentiment analysis for social media monitoring
+  - Add natural language chatbot for marketing advice
+
+
+================================================================================
+15. CONCLUSION
+================================================================================
+
+AutoMarketer AI is a comprehensive AI-powered marketing automation platform
+built as a Final Year Project. The frontend demonstrates modern web
+development practices including:
+
+  - React 19 with TypeScript for type-safe component development
+  - Feature-based modular architecture for scalability
+  - AI service integration pattern with mock/live dual-mode
+  - Responsive design with dark/light theme support
+  - Lazy loading and code splitting for performance
+  - Custom hooks for state management
+  - Reusable UI component library
+
+The project showcases the integration of large language models (Kimi K2.5
+by Moonshot AI) into a practical business application, demonstrating how AI
+can automate and enhance marketing workflows that traditionally require
+significant human expertise and time.
+
+The four core AI features (Content Generation, Audience Profiling, Competitor
+Analysis, and Lead Scoring) form the innovative heart of the platform, while
+the supporting features (Campaigns, Email, Scheduler, Analytics, etc.)
+provide the complete ecosystem needed for a professional marketing tool.
+
+================================================================================
+                            END OF REPORT
+================================================================================

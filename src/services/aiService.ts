@@ -9,7 +9,13 @@ import {
 } from "@/types";
 
 /**
- * Singleton ApiClient for Gemini & n8n interactions
+ * Singleton ApiClient for Kimi K2 (via Hugging Face) & n8n interactions.
+ *
+ * Two modes:
+ *  1. Mock mode (default) — returns realistic fake data after a short delay.
+ *  2. Live mode — POSTs to your n8n webhook which forwards to Kimi K2.
+ *
+ * Toggle via REACT_APP_USE_MOCKS env variable.
  */
 class ApiClient {
   private static instance: ApiClient;
@@ -85,7 +91,7 @@ export const generateCampaignStrategy = (productName: string, goal: string) =>
     "generate_strategy",
     { productName, goal },
     {
-      overview: `A comprehensive digital strategy for ${productName} focused on ${goal}. The approach leverages cross-channel synergy using Gemini 3 Pro's reasoning capabilities.`,
+      overview: `A comprehensive digital strategy for ${productName} focused on ${goal}. The approach leverages cross-channel synergy powered by Kimi K2's advanced reasoning capabilities.`,
       targetAudience: "Tech-savvy professionals aged 25-45.",
       keyThemes: ["Efficiency", "Future of Work", "Data-Driven"],
       suggestedPosts: [
@@ -129,7 +135,7 @@ export const analyzeLeadScore = (leadData: {
       return {
         score: Math.min(100, baseScore + randomFactor),
         reason:
-          "High engagement level detected. Thinking Model analysis suggests strong intent based on pricing page visits.",
+          "High engagement level detected. Kimi K2 analysis suggests strong intent based on pricing page visits.",
       };
     },
     2500,
@@ -189,7 +195,7 @@ export const generateAudiencePersona = (
     3500, // Thinking delay
   );
 
-// --- SEO Research (New Feature) ---
+// --- SEO Research ---
 
 export const generateSeoKeywords = (topic: string, niche: string) =>
   withFallback<SeoResult>(
@@ -199,12 +205,12 @@ export const generateSeoKeywords = (topic: string, niche: string) =>
       keywords: [
         { term: `${topic} automation`, volume: "12k", difficulty: "High" },
         { term: `best ${topic} tools`, volume: "5.4k", difficulty: "Medium" },
-        { term: `${niche} trends 2024`, volume: "8k", difficulty: "Low" },
+        { term: `${niche} trends 2026`, volume: "8k", difficulty: "Low" },
         { term: "AI marketing strategy", volume: "22k", difficulty: "High" },
-        { term: "how to use ${topic}", volume: "1.2k", difficulty: "Low" },
+        { term: `how to use ${topic}`, volume: "1.2k", difficulty: "Low" },
       ],
       contentIdeas: [
-        `The Ultimate Guide to ${topic} in 2024`,
+        `The Ultimate Guide to ${topic} in 2026`,
         `5 Ways ${niche} is Changing`,
         `${topic} vs Traditional Methods: A Comparison`,
       ],
@@ -214,4 +220,22 @@ export const generateSeoKeywords = (topic: string, niche: string) =>
       ],
     },
     3000,
+  );
+// --- AI Chat Assistant ---
+
+export const chatWithAi = (message: string, context?: string) =>
+  withFallback<string>(
+    "chat_response",
+    { message, context },
+    () => {
+      const responses = [
+        "That's a great angle! I'd suggest highlighting the unique value proposition more clearly.",
+        "Based on current trends, shorter video content might drive better engagement for this topic.",
+        "Have you considered A/B testing the headline? 'Unlock Your Potential' often performs well.",
+        "I can help you draft a strategy for that. What's your primary KPI?",
+        "Your audience seems to respond well to data-driven insights. Maybe include a statistic?",
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    },
+    2000,
   );

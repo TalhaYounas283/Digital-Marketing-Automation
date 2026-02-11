@@ -16,7 +16,7 @@ const features = [
   {
     icon: <Sparkles size={18} />,
     title: "AI Content Generation",
-    desc: "Create marketing content with Gemini AI",
+    desc: "Create marketing content with Kimi K2 AI",
   },
   {
     icon: <BarChart3 size={18} />,

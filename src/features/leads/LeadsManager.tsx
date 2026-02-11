@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Lead } from "@/types";
-import { analyzeLeadScore } from "@/services/geminiService";
+import { analyzeLeadScore } from "@/services/aiService";
 import {
   Search,
   Filter,
