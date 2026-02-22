@@ -9,13 +9,13 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
   isThinkingMode,
 }) => {
   return (
-    <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 pb-6 border-b border-slate-200 mb-8">
+    <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 pb-6 border-b border-[var(--border)] mb-8">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">
+        <h2 className="text-2xl font-bold text-[var(--text-primary)]">
           Marketing Content Studio
         </h2>
         <div className="flex items-center gap-3 mt-1">
-          <p className="text-slate-500 text-sm">
+          <p className="text-[var(--text-secondary)] text-sm">
             AI-powered content generation and strategy
           </p>
           {isThinkingMode && (

@@ -14,13 +14,10 @@ import {
   User,
   Sun,
   Moon,
-  Search,
   Calendar,
   FileText,
   Mail,
 } from "lucide-react";
-import { CommandPalette } from "../CommandPalette";
-import { KimiChatbot } from "../KimiChatbot";
 
 const NavItem = ({
   to,
@@ -216,24 +213,6 @@ export const Layout: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <button
-              className="hidden md:flex items-center gap-2 px-3 py-1.5 text-slate-400 hover:text-blue-600 bg-[var(--bg-main)] border border-[var(--border)] rounded-lg text-sm transition-all"
-              onClick={() => {
-                const event = new KeyboardEvent("keydown", {
-                  key: "k",
-                  ctrlKey: true,
-                  metaKey: true,
-                  bubbles: true,
-                });
-                window.dispatchEvent(event);
-              }}
-            >
-              <Search size={16} />
-              <span>Search...</span>
-              <kbd className="hidden lg:inline-flex items-center gap-1 text-[10px] font-bold opacity-50">
-                <span className="text-xs">⌘</span>K
-              </kbd>
-            </button>
-            <button
               onClick={toggleDarkMode}
               className="p-2 text-slate-400 hover:text-yellow-500 dark:hover:text-blue-400 transition-colors"
               title={
@@ -256,7 +235,6 @@ export const Layout: React.FC = () => {
             <Outlet />
           </div>
         </main>
-        <CommandPalette />
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -354,7 +332,6 @@ export const Layout: React.FC = () => {
           </div>
         </div>
       )}
-      <KimiChatbot />
     </div>
   );
 };

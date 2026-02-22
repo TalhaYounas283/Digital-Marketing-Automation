@@ -18,7 +18,7 @@ import {
 const benefits = [
   { icon: <Brain size={18} />, text: "AI-powered content generation" },
   { icon: <Target size={18} />, text: "Intelligent lead scoring" },
-  { icon: <Crosshair size={18} />, text: "Competitor SWOT analysis" },
+  { icon: <Crosshair size={18} />, text: "Performance analytics insights" },
   { icon: <Layers size={18} />, text: "Multi-channel campaign management" },
 ];
 
@@ -287,13 +287,8 @@ export const Register: React.FC = () => {
                 />
                 <span className="text-xs text-slate-500 leading-relaxed">
                   I agree to the{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Terms of Service
-                  </a>{" "}
-                  and{" "}
-                  <a href="#" className="text-blue-600 hover:underline">
-                    Privacy Policy
-                  </a>
+                  <span className="text-blue-600">Terms of Service</span> and{" "}
+                  <span className="text-blue-600">Privacy Policy</span>
                 </span>
               </label>
             </div>

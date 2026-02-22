@@ -10,7 +10,19 @@ export interface Campaign {
   clicks: number;
   impressions: number;
   startDate: string;
+  settings?: {
+    dailyCap: number;
+    autoOptimize: boolean;
+    sendAlerts: boolean;
+  };
 }
+
+type CampaignUpdatePayload = {
+  status: Campaign["status"];
+  platform: Campaign["platform"];
+  budget: number;
+  settings: Campaign["settings"];
+};
 
 const mockCampaigns: Campaign[] = [
   {
@@ -95,6 +107,11 @@ export const useCampaigns = () => {
       clicks: 0,
       impressions: 0,
       startDate: formData.startDate,
+      settings: {
+        dailyCap: Math.max(Math.floor((Number(formData.budget) || 0) / 30), 0),
+        autoOptimize: true,
+        sendAlerts: true,
+      },
     };
 
     setCampaigns([newCampaign, ...campaigns]);
@@ -110,6 +127,25 @@ export const useCampaigns = () => {
       status: "draft",
       startDate: new Date().toISOString().split("T")[0],
     });
+  };
+
+  const updateCampaign = (
+    campaignId: string,
+    payload: CampaignUpdatePayload,
+  ) => {
+    setCampaigns((prev) =>
+      prev.map((campaign) =>
+        campaign.id === campaignId
+          ? {
+              ...campaign,
+              status: payload.status,
+              platform: payload.platform,
+              budget: payload.budget,
+              settings: payload.settings,
+            }
+          : campaign,
+      ),
+    );
   };
 
   const filteredCampaigns = campaigns.filter((campaign) => {
@@ -142,6 +178,7 @@ export const useCampaigns = () => {
       setIsModalOpen,
       setFormData,
       handleCreateCampaign,
+      updateCampaign,
     },
   };
 };

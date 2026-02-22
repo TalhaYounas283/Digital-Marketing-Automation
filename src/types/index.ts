@@ -106,3 +106,18 @@ export interface SeoResult {
   contentIdeas: string[];
   competitorUrls: string[];
 }
+
+export interface KPIData {
+  totalReach: number;
+  impressions: number;
+  clickRate: number;
+  conversion: number;
+  chartData: { name: string; visits: number; clicks: number }[];
+  recentActivity: { id: number; campaign: string; performance: string; time: string }[];
+}
+
+export interface WebSocketMessage {
+  type: "kpi_update" | "activity_update" | "error";
+  data: KPIData | Partial<KPIData>;
+  timestamp: Date;
+}

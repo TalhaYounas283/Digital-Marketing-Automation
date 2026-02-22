@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StatsCard } from "./StatsCard";
 import {
   Users,
@@ -6,6 +6,8 @@ import {
   MousePointerClick,
   TrendingUp,
   ArrowRight,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import {
   AreaChart,
@@ -17,23 +19,53 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
+import { websocketService } from "@/services/websocketService";
+import { KPIData } from "@/types";
 
-const data = [
-  { name: "Mon", visits: 4000, clicks: 2400 },
-  { name: "Tue", visits: 3000, clicks: 1398 },
-  { name: "Wed", visits: 2000, clicks: 9800 },
-  { name: "Thu", visits: 2780, clicks: 3908 },
-  { name: "Fri", visits: 1890, clicks: 4800 },
-  { name: "Sat", visits: 2390, clicks: 3800 },
-  { name: "Sun", visits: 3490, clicks: 4300 },
-];
+const defaultKPI: KPIData = {
+  totalReach: 0,
+  impressions: 0,
+  clickRate: 0,
+  conversion: 0,
+  chartData: [],
+  recentActivity: [],
+};
 
 export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [kpiData, setKpiData] = useState<KPIData>(defaultKPI);
+  const [isConnected, setIsConnected] = useState(false);
 
-  return (
+  useEffect(() => {
+    const unsubscribeMessage = websocketService.subscribe((data) => {
+      setKpiData(data);
+    });
+
+    const unsubscribeConnection = websocketService.onConnectionChange((connected) => {
+      setIsConnected(connected);
+    });
+
+    websocketService.connect();
+
+    return () => {
+      unsubscribeMessage();
+      unsubscribeConnection();
+      websocketService.disconnect();
+    };
+  }, []);
+
+  const formatNumber = useCallback((num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
+    return num.toLocaleString();
+  }, []);
+
+  const formatPercent = useCallback((num: number): string => {
+    return `${num.toFixed(1)}%`;
+  }, []);
+
+return (
     <div className="space-y-6 animate-fade-in transition-colors duration-200">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)]">
@@ -43,50 +75,57 @@ export const Dashboard: React.FC = () => {
             Track your marketing performance and key metrics
           </p>
         </div>
-        <button
-          onClick={() => navigate("/reports")}
-          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors text-sm"
-        >
-          View Reports
-          <ArrowRight size={16} />
-        </button>
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium ${
+            isConnected 
+              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+          }`}>
+            {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
+            {isConnected ? "Live" : "Disconnected"}
+          </div>
+          <button
+            onClick={() => navigate("/analytics")}
+            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium transition-colors text-sm"
+          >
+            View Analytics
+            <ArrowRight size={16} />
+          </button>
+        </div>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="Total Reach"
-          value="12,450"
-          change="12%"
+          value={formatNumber(kpiData.totalReach)}
+          change="+12%"
           isPositive={true}
           icon={<Users size={20} />}
         />
         <StatsCard
           title="Impressions"
-          value="84.3k"
-          change="8.1%"
+          value={formatNumber(kpiData.impressions)}
+          change="+8.1%"
           isPositive={true}
           icon={<Eye size={20} />}
         />
         <StatsCard
           title="Click Rate"
-          value="4,203"
-          change="2.4%"
+          value={formatNumber(kpiData.clickRate)}
+          change="+2.4%"
           isPositive={false}
           icon={<MousePointerClick size={20} />}
         />
         <StatsCard
           title="Conversion"
-          value="98.2%"
-          change="1.2%"
+          value={formatPercent(kpiData.conversion)}
+          change="+1.2%"
           isPositive={true}
           icon={<TrendingUp size={20} />}
         />
       </div>
 
-      {/* Charts Section */}
       <div className="grid grid-cols-12 gap-6">
-        {/* Main Chart */}
         <div className="col-span-12 lg:col-span-8 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] p-6 transition-colors duration-200">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -94,7 +133,7 @@ export const Dashboard: React.FC = () => {
                 Traffic Overview
               </h3>
               <p className="text-sm text-[var(--text-secondary)]">
-                Website visits over time
+                Real-time website visits
               </p>
             </div>
             <select className="px-3 py-2 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] bg-[var(--bg-card)] focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -107,7 +146,7 @@ export const Dashboard: React.FC = () => {
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
-                data={data}
+                data={kpiData.chartData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
               >
                 <defs>
@@ -156,42 +195,41 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="col-span-12 lg:col-span-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] p-6 transition-colors duration-200">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-[var(--text-primary)]">
               Recent Activity
             </h3>
             <p className="text-sm text-[var(--text-secondary)]">
-              Latest updates
+              Live updates
             </p>
           </div>
 
           <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
+            {kpiData.recentActivity.map((activity) => (
               <div
-                key={i}
+                key={activity.id}
                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--bg-main)] transition-colors cursor-pointer"
               >
                 <div className="w-2 h-2 rounded-full bg-blue-600"></div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                    Campaign #{100 + i} active
+                    {activity.campaign}
                   </p>
                   <p className="text-xs text-[var(--text-secondary)] truncate">
-                    Performance: High engagement
+                    {activity.performance}
                   </p>
                 </div>
-                <span className="text-xs text-[var(--text-muted)]">2h ago</span>
+                <span className="text-xs text-[var(--text-muted)]">{activity.time}</span>
               </div>
             ))}
           </div>
 
           <button
-            onClick={() => navigate("/activity")}
+            onClick={() => navigate("/campaigns")}
             className="w-full mt-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-main)] border border-[var(--border)] rounded-lg transition-colors"
           >
-            View All Activity
+            View Campaigns
           </button>
         </div>
       </div>

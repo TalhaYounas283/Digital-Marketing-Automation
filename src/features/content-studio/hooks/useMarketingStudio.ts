@@ -49,6 +49,7 @@ export const useMarketingStudio = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [copyError, setCopyError] = useState<string | null>(null);
 
   const handleGeneratePost = async () => {
     if (!topic || !audience) return;
@@ -116,10 +117,15 @@ export const useMarketingStudio = () => {
     }
   };
 
-  const copyToClipboard = (text: string, index: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
+  const copyToClipboard = async (text: string, index: number) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIndex(index);
+      setCopyError(null);
+      setTimeout(() => setCopiedIndex(null), 2000);
+    } catch (error) {
+      setCopyError("Clipboard access failed. Please copy manually.");
+    }
   };
 
   const isThinkingMode = activeTab === "campaign" || activeTab === "seo";
@@ -145,6 +151,7 @@ export const useMarketingStudio = () => {
       isGenerating,
       isGeneratingImage,
       copiedIndex,
+      copyError,
       isThinkingMode,
     },
     actions: {

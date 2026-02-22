@@ -20,7 +20,10 @@ export const CampaignManager: React.FC = () => {
 
       <CampaignStats stats={state.stats} />
 
-      <CampaignTable campaigns={state.filteredCampaigns} />
+      <CampaignTable
+        campaigns={state.filteredCampaigns}
+        onUpdateCampaign={actions.updateCampaign}
+      />
 
       <CampaignModal
         isOpen={state.isModalOpen}

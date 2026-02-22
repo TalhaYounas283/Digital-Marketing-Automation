@@ -1,30 +1,24 @@
 import React, { useState } from "react";
 import {
-  Mail,
   Plus,
   Send,
   Users,
   Eye,
   MousePointerClick,
-  TrendingUp,
   Calendar,
   Clock,
-  MoreVertical,
   Edit,
   Copy,
   Trash2,
   CheckCircle,
-  AlertCircle,
   Search,
   Filter,
   Download,
   Sparkles,
-  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
-import { Select } from "@/components/ui/Select";
 
 interface EmailCampaign {
   id: string;
@@ -137,7 +131,9 @@ export const EmailCampaigns: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  const [selectedCampaign, setSelectedCampaign] = useState<EmailCampaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<EmailCampaign | null>(
+    null,
+  );
 
   // New campaign form state
   const [newCampaign, setNewCampaign] = useState({
@@ -205,6 +201,38 @@ export const EmailCampaigns: React.FC = () => {
 
   const deleteCampaign = (id: string) => {
     setCampaigns(campaigns.filter((c) => c.id !== id));
+  };
+
+  const handleSendNow = (id: string) => {
+    const sentDate = new Date().toISOString().slice(0, 10);
+    setCampaigns((prev) =>
+      prev.map((campaign) =>
+        campaign.id === id
+          ? {
+              ...campaign,
+              status: "sent",
+              sentDate,
+              scheduledDate: undefined,
+              openRate: parseFloat((30 + Math.random() * 20).toFixed(1)),
+              clickRate: parseFloat((8 + Math.random() * 10).toFixed(1)),
+            }
+          : campaign,
+      ),
+    );
+  };
+
+  const openEditCampaign = (campaign: EmailCampaign) => {
+    setSelectedCampaign({ ...campaign });
+  };
+
+  const saveCampaignEdit = () => {
+    if (!selectedCampaign) return;
+    setCampaigns((prev) =>
+      prev.map((campaign) =>
+        campaign.id === selectedCampaign.id ? selectedCampaign : campaign,
+      ),
+    );
+    setSelectedCampaign(null);
   };
 
   return (
@@ -399,12 +427,21 @@ export const EmailCampaigns: React.FC = () => {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => setSelectedCampaign(campaign)}
+                        onClick={() => openEditCampaign(campaign)}
                         className="p-2 hover:bg-[var(--bg-main)] rounded-lg transition-colors"
                         title="Edit"
                       >
                         <Edit size={16} className="text-[var(--text-secondary)]" />
                       </button>
+                      {(campaign.status === "draft" || campaign.status === "scheduled") && (
+                        <button
+                          onClick={() => handleSendNow(campaign.id)}
+                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Send now"
+                        >
+                          <Send size={16} className="text-blue-600" />
+                        </button>
+                      )}
                       <button
                         onClick={() => duplicateCampaign(campaign)}
                         className="p-2 hover:bg-[var(--bg-main)] rounded-lg transition-colors"
@@ -433,7 +470,7 @@ export const EmailCampaigns: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         title="Create Email Campaign"
-        size="lg"
+        maxWidth="max-w-2xl"
       >
         <div className="space-y-4">
           <div>
@@ -511,6 +548,137 @@ export const EmailCampaigns: React.FC = () => {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Edit Campaign Modal */}
+      <Modal
+        isOpen={!!selectedCampaign}
+        onClose={() => setSelectedCampaign(null)}
+        title="Edit Campaign"
+        maxWidth="max-w-2xl"
+      >
+        {selectedCampaign && (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                Campaign Name
+              </label>
+              <Input
+                type="text"
+                value={selectedCampaign.name}
+                onChange={(e) =>
+                  setSelectedCampaign({
+                    ...selectedCampaign,
+                    name: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                Email Subject
+              </label>
+              <Input
+                type="text"
+                value={selectedCampaign.subject}
+                onChange={(e) =>
+                  setSelectedCampaign({
+                    ...selectedCampaign,
+                    subject: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  Template
+                </label>
+                <select
+                  value={selectedCampaign.template}
+                  onChange={(e) =>
+                    setSelectedCampaign({
+                      ...selectedCampaign,
+                      template: e.target.value,
+                    })
+                  }
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {templates.map((template) => (
+                    <option key={template} value={template}>
+                      {template}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  Status
+                </label>
+                <select
+                  value={selectedCampaign.status}
+                  onChange={(e) =>
+                    setSelectedCampaign({
+                      ...selectedCampaign,
+                      status: e.target.value as EmailCampaign["status"],
+                    })
+                  }
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="draft">Draft</option>
+                  <option value="scheduled">Scheduled</option>
+                  <option value="sending">Sending</option>
+                  <option value="sent">Sent</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  Recipient Count
+                </label>
+                <Input
+                  type="number"
+                  value={selectedCampaign.recipients}
+                  onChange={(e) =>
+                    setSelectedCampaign({
+                      ...selectedCampaign,
+                      recipients: parseInt(e.target.value, 10) || 0,
+                    })
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                  Schedule Date
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={selectedCampaign.scheduledDate || ""}
+                  onChange={(e) =>
+                    setSelectedCampaign({
+                      ...selectedCampaign,
+                      scheduledDate: e.target.value || undefined,
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 pt-4 border-t border-[var(--border)]">
+              <Button variant="outline" onClick={() => setSelectedCampaign(null)}>
+                Cancel
+              </Button>
+              <Button onClick={saveCampaignEdit} icon={<Sparkles size={18} />}>
+                Save Changes
+              </Button>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

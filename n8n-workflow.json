@@ -1,374 +1,345 @@
 {
-  "name": "AutoMarketer AI — Kimi K2 Backend",
+  "name": "AutoMarketer AI - Mock Workflow",
   "nodes": [
     {
       "parameters": {
         "httpMethod": "POST",
         "path": "automarketer",
         "responseMode": "responseNode",
-        "options": {
-          "rawBody": false
-        }
+        "options": {}
       },
-      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "id": "webhook-node",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 460]
+      "position": [250, 300],
+      "webhookId": "automarketer-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\nconst action = body.action;\nconst payload = body;\n\ndelete payload.action;\n\nreturn {\n  json: {\n    action,\n    ...payload\n  }\n};"
+      },
+      "id": "code-parse",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [470, 300]
     },
     {
       "parameters": {
         "rules": {
-          "rules": [
+          "values": [
             {
-              "outputKey": "generate_copy",
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "loose"
+                  "typeValidation": "strict"
                 },
                 "conditions": [
                   {
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "generate_copy",
-                    "operator": { "type": "string", "operation": "equals" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
-                ],
-                "combinator": "and"
+                ]
               },
-              "renameOutput": true
+              "renameOutput": true,
+              "outputKey": "generate_copy"
             },
             {
-              "outputKey": "generate_strategy",
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "loose"
+                  "typeValidation": "strict"
                 },
                 "conditions": [
                   {
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "generate_strategy",
-                    "operator": { "type": "string", "operation": "equals" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
-                ],
-                "combinator": "and"
+                ]
               },
-              "renameOutput": true
+              "renameOutput": true,
+              "outputKey": "generate_strategy"
             },
             {
-              "outputKey": "analyze_lead",
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "loose"
+                  "typeValidation": "strict"
                 },
                 "conditions": [
                   {
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "analyze_lead",
-                    "operator": { "type": "string", "operation": "equals" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
-                ],
-                "combinator": "and"
+                ]
               },
-              "renameOutput": true
+              "renameOutput": true,
+              "outputKey": "analyze_lead"
             },
             {
-              "outputKey": "analyze_competitor",
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
-                  "typeValidation": "loose"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "analyze_competitor",
-                    "operator": { "type": "string", "operation": "equals" }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true
-            },
-            {
-              "outputKey": "optimize_content",
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "loose"
+                  "typeValidation": "strict"
                 },
                 "conditions": [
                   {
                     "leftValue": "={{ $json.action }}",
                     "rightValue": "optimize_content",
-                    "operator": { "type": "string", "operation": "equals" }
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
                   }
-                ],
-                "combinator": "and"
+                ]
               },
-              "renameOutput": true
-            },
-            {
-              "outputKey": "generate_persona",
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "loose"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "generate_persona",
-                    "operator": { "type": "string", "operation": "equals" }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true
-            },
-            {
-              "outputKey": "generate_seo",
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "loose"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "generate_seo",
-                    "operator": { "type": "string", "operation": "equals" }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true
+              "renameOutput": true,
+              "outputKey": "optimize_content"
             }
           ]
         },
-        "options": {
-          "fallbackOutput": "extra"
-        }
+        "options": {}
       },
-      "id": "a1b2c3d4-0002-4000-8000-000000000002",
-      "name": "Route by Action",
+      "id": "switch-node",
+      "name": "Route Action",
       "type": "n8n-nodes-base.switch",
-      "typeVersion": 2,
-      "position": [460, 460]
+      "typeVersion": 3,
+      "position": [690, 300]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2000,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert social media copywriter for AutoMarketer AI. Generate engaging, platform-optimized content.\\n\\nRules by Platform:\\n- Twitter/X: Max 280 chars, punchy, 2-3 trending hashtags\\n- LinkedIn: Professional tone, 1-3 paragraphs, industry insights\\n- Instagram: Casual, emoji-rich (5-8 emojis), 8-12 hashtags\\n- Facebook: Conversational, include clear CTA, shareable format\\n\\nAlways respond with ONLY valid JSON, no markdown.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Generate 3 unique social media posts.\\n\\nPlatform: {{ $json.platform }}\\nTopic: {{ $json.topic }}\\nTone: {{ $json.tone }}\\nTarget Audience: {{ $json.audience }}\\n\\nRespond with JSON array of 3 post strings:\\n[\\\"post 1\\\", \\\"post 2\\\", \\\"post 3\\\"]\"\n    }\n  ]\n}",
-        "options": {}
+        "jsCode": "const { topic, platform, tone, audience } = $input.first().json;\n\nconst posts = [\n  `Excited to share our latest thoughts on ${topic}. It's time to rethink how we approach ${audience}. \\n\\n#${topic.replace(/\\s+/g, '')} #Innovation`,\n  `Hot take: ${topic} is the future. \\n\\nWe've been seeing strong results. What are your thoughts? \\n\\n#${tone} #TechTrends`,\n  `Meaningful change starts with ${topic}. \\n\\nDesigned for ${audience} who demand excellence. \\n\\n#Inspiration #Leadership`\n];\n\nreturn {\n  json: posts\n};"
       },
-      "id": "a1b2c3d4-0003-4000-8000-000000000003",
-      "name": "Content Generator",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 60]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 3000,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a senior marketing strategist. Create a data-driven campaign strategy. Always respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Create campaign strategy:\\n\\nProduct: {{ $json.productName }}\\nGoal: {{ $json.goal }}\\n\\nRespond with JSON:\\n{\\n  \\\"overview\\\": \\\"2-3 sentence summary\\\",\\n  \\\"targetAudience\\\": \\\"who this targets\\\",\\n  \\\"keyThemes\\\": [\\\"theme1\\\", \\\"theme2\\\", \\\"theme3\\\"],\\n  \\\"suggestedPosts\\\": [\\n    {\\n      \\\"platform\\\": \\\"LinkedIn\\\",\\n      \\\"content\\\": \\\"post text\\\",\\n      \\\"hashtags\\\": [\\\"hash1\\\"],\\n      \\\"bestTime\\\": \\\"Tuesday 10:00 AM\\\"\\n    }\\n  ]\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0004-4000-8000-000000000004",
-      "name": "Campaign Strategist",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 180]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.3,\n  \"max_tokens\": 1000,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an AI lead scoring analyst. Score leads 0-100 based on conversion potential. Respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Score this lead:\\n\\nName: {{ $json.name }}\\nSource: {{ $json.source }}\\nInteractions: {{ $json.interactions }}\\n\\nRespond with JSON:\\n{\\n  \\\"score\\\": 75,\\n  \\\"reason\\\": \\\"explanation of scoring\\\"\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0005-4000-8000-000000000005",
-      "name": "Lead Scorer",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 300]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.5,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a competitive intelligence analyst. Perform a thorough SWOT analysis. Respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Analyze this competitor:\\n\\nCompetitor: {{ $json.competitorName }}\\nIndustry: {{ $json.industry }}\\n\\nRespond with JSON:\\n{\\n  \\\"strengths\\\": [\\\"s1\\\", \\\"s2\\\"],\\n  \\\"weaknesses\\\": [\\\"w1\\\", \\\"w2\\\"],\\n  \\\"opportunities\\\": [\\\"o1\\\", \\\"o2\\\"],\\n  \\\"threats\\\": [\\\"t1\\\", \\\"t2\\\"],\\n  \\\"strategicAdvice\\\": \\\"Detailed recommendation paragraph\\\"\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0006-4000-8000-000000000006",
-      "name": "Competitor Analyzer",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 420]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.4,\n  \"max_tokens\": 1500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert content editor. Improve marketing content while maintaining brand voice. Respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Optimize this content:\\n\\nOriginal: {{ $json.originalText }}\\nGoal: {{ $json.goal }}\\n\\nRespond with JSON:\\n{\\n  \\\"original\\\": \\\"the original text\\\",\\n  \\\"optimized\\\": \\\"the improved text\\\",\\n  \\\"changesMade\\\": \\\"summary of changes\\\"\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0007-4000-8000-000000000007",
-      "name": "Content Optimizer",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 540]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a market research expert. Create detailed buyer personas. Respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Create buyer persona:\\n\\nProduct: {{ $json.productName }}\\nIndustry: {{ $json.industry }}\\nRegion: {{ $json.region }}\\n\\nRespond with JSON:\\n{\\n  \\\"name\\\": \\\"Persona Name\\\",\\n  \\\"ageRange\\\": \\\"28-35\\\",\\n  \\\"occupation\\\": \\\"Job Title\\\",\\n  \\\"incomeLevel\\\": \\\"$70k-$90k\\\",\\n  \\\"bio\\\": \\\"short bio\\\",\\n  \\\"goals\\\": [\\\"goal1\\\", \\\"goal2\\\"],\\n  \\\"frustrations\\\": [\\\"f1\\\", \\\"f2\\\"],\\n  \\\"motivations\\\": [\\\"m1\\\", \\\"m2\\\"],\\n  \\\"preferredChannels\\\": [\\\"LinkedIn\\\", \\\"Email\\\"]\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0008-4000-8000-000000000008",
-      "name": "Persona Builder",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 660]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://router.huggingface.co/novita/v1/chat/completions",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"moonshotai/Kimi-K2-Instruct\",\n  \"temperature\": 0.4,\n  \"max_tokens\": 2000,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an SEO expert. Provide keyword research and content ideas. Respond with ONLY valid JSON.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"SEO research for:\\n\\nTopic: {{ $json.topic }}\\nNiche: {{ $json.niche }}\\n\\nRespond with JSON:\\n{\\n  \\\"keywords\\\": [\\n    {\\\"term\\\": \\\"keyword\\\", \\\"volume\\\": \\\"12k\\\", \\\"difficulty\\\": \\\"High\\\"}\\n  ],\\n  \\\"contentIdeas\\\": [\\\"idea1\\\", \\\"idea2\\\", \\\"idea3\\\"],\\n  \\\"competitorUrls\\\": [\\\"url1\\\", \\\"url2\\\"]\\n}\"\n    }\n  ]\n}",
-        "options": {}
-      },
-      "id": "a1b2c3d4-0009-4000-8000-000000000009",
-      "name": "SEO Research",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [720, 780]
-    },
-    {
-      "parameters": {
-        "jsCode": "// ========================================\n// AutoMarketer AI — Response Formatter\n// ========================================\n// Parses Kimi K2 (Hugging Face) response\n// into clean JSON for the frontend.\n\nconst input = $input.first().json;\nconst action = $('Webhook').first().json.action;\n\nlet result;\ntry {\n  // HF Inference API returns OpenAI-compatible format\n  let content =\n    input.choices?.[0]?.message?.content ||\n    input.message?.content ||\n    input.generated_text ||\n    input.text ||\n    input.content ||\n    JSON.stringify(input);\n\n  if (typeof content === 'string') {\n    // Extract JSON from potential markdown code blocks\n    const jsonMatch = content.match(/```(?:json)?\\s*([\\s\\S]*?)```/) ||\n                      content.match(/(\\{[\\s\\S]*\\})/) ||\n                      content.match(/(\\[[\\s\\S]*\\])/);\n    if (jsonMatch) {\n      result = JSON.parse(jsonMatch[1] || jsonMatch[0]);\n    } else {\n      result = { rawResponse: content };\n    }\n  } else {\n    result = content;\n  }\n} catch (error) {\n  result = {\n    error: 'Failed to parse AI response',\n    rawResponse: String(input).substring(0, 500),\n    parseError: error.message\n  };\n}\n\nreturn [{\n  json: {\n    success: !result.error,\n    action: action,\n    timestamp: new Date().toISOString(),\n    result: result\n  }\n}];"
-      },
-      "id": "a1b2c3d4-0011-4000-8000-000000000011",
-      "name": "Format Response",
+      "id": "mock-copy",
+      "name": "Mock Copy Generator",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [960, 460]
+      "position": [910, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { productName, goal } = $input.first().json;\n\nconst strategy = {\n  overview: `A comprehensive digital strategy for ${productName} focused on ${goal}. The approach leverages cross-channel synergy and data-driven insights.`,\n  targetAudience: \"Tech-savvy professionals aged 25-45.\",\n  keyThemes: [\"Efficiency\", \"Future of Work\", \"Data-Driven\"],\n  suggestedPosts: [\n    {\n      platform: \"LinkedIn\",\n      content: `${productName} is redefining industry standards for ${goal}. #BusinessGrowth`,\n      hashtags: [\"Innovation\", \"B2B\"],\n      bestTime: \"Tuesday 10:00 AM\"\n    },\n    {\n      platform: \"Twitter\",\n      content: `Stop wasting time. ${productName} is here. #${productName.replace(/\\s+/g, '')}`,\n      hashtags: [\"Productivity\", \"Tech\"],\n      bestTime: \"Wednesday 02:00 PM\"\n    }\n  ]\n};\n\nreturn {\n  json: strategy\n};"
+      },
+      "id": "mock-strategy",
+      "name": "Mock Strategy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { name, source, interactions } = $input.first().json;\n\nconst baseScore = 60;\nconst randomFactor = Math.floor(Math.random() * 30);\n\nconst result = {\n  score: Math.min(100, baseScore + randomFactor),\n  reason: `High engagement level detected for ${name}. Analysis suggests strong intent based on ${source} interactions and ${interactions} engagement history.`\n};\n\nreturn {\n  json: result\n};"
+      },
+      "id": "mock-lead",
+      "name": "Mock Lead Scorer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "const { originalText, goal } = $input.first().json;\n\nconst result = {\n  original: originalText,\n  optimized: `[Optimized for ${goal}] \\n\\n${originalText} \\n\\nClick here to learn more.`,\n  changesMade: \"Added an engaging hook, improved sentence flow, and included a clear call-to-action.\"\n};\n\nreturn {\n  json: result\n};"
+      },
+      "id": "mock-optimize",
+      "name": "Mock Optimizer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [910, 550]
     },
     {
       "parameters": {
         "respondWith": "json",
         "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              { "name": "Content-Type", "value": "application/json" },
-              { "name": "Access-Control-Allow-Origin", "value": "*" }
-            ]
-          }
-        }
+        "options": {}
       },
-      "id": "a1b2c3d4-0012-4000-8000-000000000012",
-      "name": "Send Response",
+      "id": "respond-copy",
+      "name": "Respond Copy",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [1180, 460]
+      "position": [1130, 100]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ success: false, error: 'Unknown action. Valid actions: generate_copy, generate_strategy, analyze_lead, analyze_competitor, optimize_content, generate_persona, generate_seo', received: $json.action }) }}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              { "name": "Content-Type", "value": "application/json" },
-              { "name": "Access-Control-Allow-Origin", "value": "*" }
-            ]
-          }
-        }
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
       },
-      "id": "a1b2c3d4-0013-4000-8000-000000000013",
-      "name": "Error — Unknown Action",
+      "id": "respond-strategy",
+      "name": "Respond Strategy",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [720, 900]
+      "position": [1130, 250]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond-lead",
+      "name": "Respond Lead",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1130, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond-optimize",
+      "name": "Respond Optimize",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1130, 550]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"error\": \"Unknown action\" }",
+        "options": {}
+      },
+      "id": "respond-error",
+      "name": "Respond Error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [910, 700]
     }
   ],
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Route by Action", "type": "main", "index": 0 }]]
-    },
-    "Route by Action": {
       "main": [
-        [{ "node": "Content Generator", "type": "main", "index": 0 }],
-        [{ "node": "Campaign Strategist", "type": "main", "index": 0 }],
-        [{ "node": "Lead Scorer", "type": "main", "index": 0 }],
-        [{ "node": "Competitor Analyzer", "type": "main", "index": 0 }],
-        [{ "node": "Content Optimizer", "type": "main", "index": 0 }],
-        [{ "node": "Persona Builder", "type": "main", "index": 0 }],
-        [{ "node": "SEO Research", "type": "main", "index": 0 }],
-        [{ "node": "Error — Unknown Action", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Parse Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
-    "Content Generator": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    "Parse Request": {
+      "main": [
+        [
+          {
+            "node": "Route Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Campaign Strategist": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    "Route Action": {
+      "main": [
+        [
+          {
+            "node": "Mock Copy Generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mock Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mock Lead Scorer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mock Optimizer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Lead Scorer": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    "Mock Copy Generator": {
+      "main": [
+        [
+          {
+            "node": "Respond Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Competitor Analyzer": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    "Mock Strategy": {
+      "main": [
+        [
+          {
+            "node": "Respond Strategy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Content Optimizer": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
+    "Mock Lead Scorer": {
+      "main": [
+        [
+          {
+            "node": "Respond Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    "Persona Builder": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
-    },
-    "SEO Research": {
-      "main": [[{ "node": "Format Response", "type": "main", "index": 0 }]]
-    },
-    "Format Response": {
-      "main": [[{ "node": "Send Response", "type": "main", "index": 0 }]]
+    "Mock Optimizer": {
+      "main": [
+        [
+          {
+            "node": "Respond Optimize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "pinData": {},
   "settings": {
-    "executionOrder": "v1",
-    "saveManualExecutions": true,
-    "callerPolicy": "workflowsFromSameOwner"
+    "executionOrder": "v1"
   },
-  "versionId": "4",
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
   "meta": {
-    "instanceId": "automarketer-ai-v4-kimi-k2"
-  },
-  "tags": []
+    "templateCredsSetupCompleted": false,
+    "instanceId": ""
+  }
 }

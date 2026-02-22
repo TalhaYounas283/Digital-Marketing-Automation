@@ -33,10 +33,9 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
           placeholder="e.g. Q4 Growth Initiative"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="!bg-white !border-slate-300 !text-slate-900"
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Select
             label="Platform Channel"
             value={formData.platform}
@@ -50,7 +49,6 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
               { label: "LinkedIn Ads", value: "LinkedIn" },
               { label: "Email Marketing", value: "Email" },
             ]}
-            className="!bg-white !border-slate-300 !text-slate-900"
           />
           <Select
             label="Initial Status"
@@ -63,10 +61,9 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
               { label: "Active Start", value: "active" },
               { label: "Start Paused", value: "paused" },
             ]}
-            className="!bg-white !border-slate-300 !text-slate-900"
           />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Allocated Budget"
             type="number"
@@ -77,7 +74,6 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
             onChange={(e) =>
               setFormData({ ...formData, budget: e.target.value })
             }
-            className="!bg-white !border-slate-300 !text-slate-900"
           />
           <Input
             label="Campaign Launch Date"
@@ -87,14 +83,13 @@ export const CampaignModal: React.FC<CampaignModalProps> = ({
             onChange={(e) =>
               setFormData({ ...formData, startDate: e.target.value })
             }
-            className="!bg-white !border-slate-300 !text-slate-900"
           />
         </div>
-        <div className="pt-6 flex gap-3">
+        <div className="pt-6 flex flex-col-reverse sm:flex-row gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-semibold hover:bg-slate-50 transition-colors"
+            className="flex-1 px-4 py-2.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] font-semibold hover:bg-[var(--bg-main)] transition-colors"
           >
             Discard
           </button>

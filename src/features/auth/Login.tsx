@@ -95,8 +95,8 @@ export const Login: React.FC = () => {
               with AI-powered insights
             </h2>
             <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-              Generate content, analyze competitors, manage campaigns, score
-              leads, and grow your audience — all from one intelligent platform.
+              Generate content, optimize campaigns, manage leads, and grow your
+              audience — all from one intelligent platform.
             </p>
           </div>
 
@@ -203,12 +203,12 @@ export const Login: React.FC = () => {
                 />
                 <span className="text-sm text-slate-600">Remember me</span>
               </label>
-              <a
-                href="#"
+              <button
+                type="button"
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             <button

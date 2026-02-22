@@ -9,13 +9,13 @@ import {
 } from "@/types";
 
 /**
- * Singleton ApiClient for Kimi K2 (via Hugging Face) & n8n interactions.
+ * Singleton ApiClient for Kimi K2 (via Hugging Face) and n8n interactions.
  *
  * Two modes:
- *  1. Mock mode (default) — returns realistic fake data after a short delay.
- *  2. Live mode — POSTs to your n8n webhook which forwards to Kimi K2.
+ *  1. Mock mode (default) - returns realistic fake data after a short delay.
+ *  2. Live mode - POSTs to your n8n webhook which forwards to Kimi K2.
  *
- * Toggle via REACT_APP_USE_MOCKS env variable.
+ * Toggle via VITE_USE_MOCKS env variable.
  */
 class ApiClient {
   private static instance: ApiClient;
@@ -23,8 +23,8 @@ class ApiClient {
   private readonly useMocks: boolean;
 
   private constructor() {
-    this.baseUrl = process.env.REACT_APP_N8N_WEBHOOK_URL || "";
-    this.useMocks = process.env.REACT_APP_USE_MOCKS !== "false";
+    this.baseUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || "";
+    this.useMocks = import.meta.env.VITE_USE_MOCKS !== "false";
   }
 
   public static getInstance(): ApiClient {
@@ -49,7 +49,7 @@ class ApiClient {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return await response.json();
       } catch (error) {
-        // Silent error for UX, fallback to mock if API fails
+        // Silent error for UX, fallback to mock if API fails.
       }
     }
 
@@ -79,9 +79,9 @@ export const generateMarketingCopy = (
     "generate_copy",
     { topic, platform, tone, audience },
     [
-      `🚀 Excited to share our latest thoughts on ${topic}! It's time to revolutionize how we think about ${audience}. \n\n#${topic.replace(/\s+/g, "")} #Innovation`,
-      `Here's a hot take: ${topic} is the future. \n\nWe've been seeing incredible results. What are your thoughts? 👇 \n\n#${tone} #TechTrends`,
-      `✨ Meaningful change starts with ${topic}. \n\nDesigned specifically for ${audience} who demand excellence. \n\n#Inspiration #Leadership`,
+      `Excited to share our latest thoughts on ${topic}. It's time to rethink how we approach ${audience}. \n\n#${topic.replace(/\s+/g, "")} #Innovation`,
+      `Hot take: ${topic} is the future. \n\nWe've been seeing strong results. What are your thoughts? \n\n#${tone} #TechTrends`,
+      `Meaningful change starts with ${topic}. \n\nDesigned for ${audience} who demand excellence. \n\n#Inspiration #Leadership`,
     ],
     1500,
   );
@@ -103,7 +103,7 @@ export const generateCampaignStrategy = (productName: string, goal: string) =>
         },
         {
           platform: Platform.Twitter,
-          content: `Stop wasting time. ${productName} is here. ⚡️ #${productName.replace(/\s+/g, "")}`,
+          content: `Stop wasting time. ${productName} is here. #${productName.replace(/\s+/g, "")}`,
           hashtags: ["Productivity", "Tech"],
           bestTime: "Wednesday 02:00 PM",
         },
@@ -165,7 +165,7 @@ export const optimizeContent = (originalText: string, goal: string) =>
     { originalText, goal },
     {
       original: originalText,
-      optimized: `[Optimized for ${goal}] 🚀 \n\n${originalText} \n\n👉 Click here to learn more!`,
+      optimized: `[Optimized for ${goal}] \n\n${originalText} \n\nClick here to learn more.`,
       changesMade: "Added an engaging hook and improved sentence flow.",
     },
     1500,
@@ -221,6 +221,7 @@ export const generateSeoKeywords = (topic: string, niche: string) =>
     },
     3000,
   );
+
 // --- AI Chat Assistant ---
 
 export const chatWithAi = (message: string, context?: string) =>

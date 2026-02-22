@@ -132,10 +132,14 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-8 shadow-sm h-fit">
+    <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-8 shadow-sm h-fit">
       <div className="mb-6">
-        <h3 className="text-lg font-bold text-slate-900">{getTabTitle()}</h3>
-        <p className="text-sm text-slate-500 mt-1">{getTabDesc()}</p>
+        <h3 className="text-lg font-bold text-[var(--text-primary)]">
+          {getTabTitle()}
+        </h3>
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
+          {getTabDesc()}
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -147,14 +151,14 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. Benefits of sustainable home heating"
-              className="h-28 !bg-white !border-slate-300"
+              className="h-28"
             />
             <Input
               label="Target Audience"
               value={audience}
               onChange={(e) => setAudience(e.target.value)}
               placeholder="e.g. Environmentally conscious homeowners"
-              className="!bg-white !border-slate-300"
+              className=""
             />
             <div className="grid grid-cols-2 gap-4">
               <Select
@@ -165,7 +169,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                   label: p,
                   value: p,
                 }))}
-                className="!bg-white !border-slate-300"
+                className=""
               />
               <Select
                 label="Desired Tone"
@@ -175,7 +179,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                   label: t,
                   value: t,
                 }))}
-                className="!bg-white !border-slate-300"
+                className=""
               />
             </div>
           </>
@@ -188,7 +192,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
               placeholder="e.g. EcoSmart Pro"
-              className="!bg-white !border-slate-300"
+              className=""
             />
             <Input
               label="Primary Objectives"
@@ -196,7 +200,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               value={campaignGoal}
               onChange={(e) => setCampaignGoal(e.target.value)}
               placeholder="What are your main goals for this campaign?"
-              className="h-32 !bg-white !border-slate-300"
+              className="h-32"
             />
           </>
         )}
@@ -208,14 +212,14 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               value={seoTopic}
               onChange={(e) => setSeoTopic(e.target.value)}
               placeholder="e.g. Renewable energy storage"
-              className="!bg-white !border-slate-300"
+              className=""
             />
             <Input
               label="Market Niche"
               value={seoNiche}
               onChange={(e) => setSeoNiche(e.target.value)}
               placeholder="e.g. Residential Solar Power"
-              className="!bg-white !border-slate-300"
+              className=""
             />
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
               <Lightbulb size={20} className="text-blue-600 shrink-0" />
@@ -235,7 +239,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
               value={contentToOptimize}
               onChange={(e) => setContentToOptimize(e.target.value)}
               placeholder="Paste the text you want to optimize..."
-              className="h-40 !bg-white !border-slate-300"
+              className="h-40"
             />
             <Select
               label="Desired Outcome"
@@ -263,7 +267,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                   value: "Optimize for SEO keywords",
                 },
               ]}
-              className="!bg-white !border-slate-300"
+              className=""
             />
           </>
         )}

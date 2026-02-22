@@ -82,10 +82,10 @@ export const SocialConnections: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">
           Social Connections
         </h2>
-        <p className="text-slate-500 text-sm">
+        <p className="text-[var(--text-secondary)] text-sm">
           Connect your social media accounts to enable auto-posting and
           analytics.
         </p>
@@ -95,7 +95,7 @@ export const SocialConnections: React.FC = () => {
         {accounts.map((account) => (
           <div
             key={account.id}
-            className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+            className="flex items-center justify-between p-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-4">
               <div
@@ -104,7 +104,7 @@ export const SocialConnections: React.FC = () => {
                 {account.icon}
               </div>
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white">
+                <h3 className="font-bold text-[var(--text-primary)]">
                   {account.name}
                 </h3>
                 {account.connected ? (
@@ -112,7 +112,9 @@ export const SocialConnections: React.FC = () => {
                     <CheckCircle2 size={12} /> Connected as {account.username}
                   </p>
                 ) : (
-                  <p className="text-xs text-slate-500">Not connected</p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Not connected
+                  </p>
                 )}
               </div>
             </div>
@@ -120,7 +122,7 @@ export const SocialConnections: React.FC = () => {
             {account.connected ? (
               <button
                 onClick={() => handleDisconnect(account.id)}
-                className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
                 Disconnect
               </button>
@@ -128,7 +130,7 @@ export const SocialConnections: React.FC = () => {
               <button
                 onClick={() => handleConnect(account.id)}
                 disabled={connectingId === account.id}
-                className="px-4 py-2 text-sm font-medium bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 rounded-lg transition-all disabled:opacity-50 min-w-[100px] flex justify-center"
+                className="px-4 py-2 text-sm font-medium bg-[var(--text-primary)] text-[var(--text-inverse)] hover:opacity-90 rounded-lg transition-all disabled:opacity-50 min-w-[100px] flex justify-center"
               >
                 {connectingId === account.id ? (
                   <Loader2 size={18} className="animate-spin" />

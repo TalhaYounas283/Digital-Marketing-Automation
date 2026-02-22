@@ -55,7 +55,7 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({ stats }) => {
       {statItems.map((stat, i) => (
         <div
           key={i}
-          className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-sm transition-shadow group"
+          className="bg-[var(--bg-card)] rounded-xl border border-[var(--border)] p-5 hover:shadow-sm transition-shadow group"
         >
           <div className="flex justify-between items-start mb-4">
             <div className={`p-2 ${stat.bg} ${stat.color} rounded-lg`}>
@@ -68,10 +68,10 @@ export const CampaignStats: React.FC<CampaignStatsProps> = ({ stats }) => {
             </div>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900 leading-none">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] leading-none">
               {stat.value}
             </h3>
-            <p className="text-slate-500 text-xs font-medium mt-1 uppercase tracking-wider">
+            <p className="text-[var(--text-secondary)] text-xs font-medium mt-1 uppercase tracking-wider">
               {stat.label}
             </p>
           </div>

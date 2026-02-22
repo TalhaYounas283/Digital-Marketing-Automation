@@ -61,6 +61,7 @@ export const ContentGenerator: React.FC = () => {
           generatedImage={state.generatedImage}
           isGeneratingImage={state.isGeneratingImage}
           copiedIndex={state.copiedIndex}
+          copyError={state.copyError}
           platform={state.platform}
           actions={{
             handleGenerateImage: actions.handleGenerateImage,

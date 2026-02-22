@@ -19,15 +19,15 @@ export const StudioTabs: React.FC<StudioTabsProps> = ({
   ];
 
   return (
-    <div className="bg-slate-100 p-1 rounded-xl flex gap-1 h-fit">
+    <div className="bg-[var(--bg-main)] p-1 rounded-xl flex gap-1 h-fit border border-[var(--border)]">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id as ContentTab)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
             activeTab === tab.id
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-slate-500 hover:text-slate-900"
+              ? "bg-[var(--bg-card)] text-blue-600 shadow-sm"
+              : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           }`}
         >
           {tab.icon}

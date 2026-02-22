@@ -20,7 +20,7 @@ export const CampaignHeader: React.FC<CampaignHeaderProps> = ({
 }) => {
   return (
     <div className="flex flex-col md:flex-row gap-4 justify-between items-stretch md:items-center">
-      <div className="relative flex-1 max-w-md">
+      <div className="relative flex-1 md:max-w-md">
         <Input
           placeholder="Search campaigns..."
           icon={<Search size={18} className="text-slate-400" />}
@@ -29,9 +29,9 @@ export const CampaignHeader: React.FC<CampaignHeaderProps> = ({
           className="w-full !bg-white !border-slate-200 !rounded-lg !py-2.5 !pl-10 !text-slate-900 shadow-sm"
         />
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
         <select
-          className="bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-sm"
+          className="w-full sm:w-auto bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] text-sm font-medium rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer shadow-sm"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         >
@@ -45,7 +45,7 @@ export const CampaignHeader: React.FC<CampaignHeaderProps> = ({
           onClick={onNewCampaign}
           variant="primary"
           icon={<Plus size={18} />}
-          className="!bg-blue-600 hover:!bg-blue-700 text-white font-semibold rounded-lg px-5 shadow-sm"
+          className="w-full sm:w-auto !bg-blue-600 hover:!bg-blue-700 text-white font-semibold rounded-lg px-5 shadow-sm"
         >
           New Campaign
         </Button>
