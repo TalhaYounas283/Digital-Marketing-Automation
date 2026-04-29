@@ -4,22 +4,35 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Sparkles,
   ArrowRight,
-  Target,
-  Brain,
-  Crosshair,
-  Layers,
   User,
   Mail,
   Eye,
   EyeOff,
   Check,
+  Shield,
+  Zap,
+  TrendingUp,
+  Target,
+  Layers,
+  Star,
 } from "lucide-react";
 
 const benefits = [
-  { icon: <Brain size={18} />, text: "AI-powered content generation" },
-  { icon: <Target size={18} />, text: "Intelligent lead scoring" },
-  { icon: <Crosshair size={18} />, text: "Performance analytics insights" },
-  { icon: <Layers size={18} />, text: "Multi-channel campaign management" },
+  {
+    icon: <Zap size={14} />,
+    label: "Free 14-day trial",
+    sub: "No credit card required",
+  },
+  {
+    icon: <Target size={14} />,
+    label: "AI-powered insights",
+    sub: "Generate, score, and optimize",
+  },
+  {
+    icon: <Layers size={14} />,
+    label: "Unified workspace",
+    sub: "Social, email, and leads in one place",
+  },
 ];
 
 export const Register: React.FC = () => {
@@ -70,83 +83,137 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-[45%] bg-slate-900 p-10 flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-600/10 rounded-full blur-[80px] -ml-36 -mb-36" />
+    <div className="min-h-screen bg-white flex">
+      {/* Left Panel — Branded marketing canvas */}
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950">
+        {/* Ambient glow shapes */}
+        <div className="absolute -top-40 -left-40 w-[28rem] h-[28rem] bg-fuchsia-500/30 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-40 -right-40 w-[32rem] h-[32rem] bg-indigo-500/25 rounded-full blur-[140px]" />
+        <div className="absolute top-1/2 left-1/3 w-72 h-72 bg-emerald-400/10 rounded-full blur-[90px]" />
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/25">
-              <Sparkles size={20} className="text-white" />
+        {/* Subtle grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        <div className="relative z-10 flex flex-col justify-between w-full p-12">
+          {/* Brand */}
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-xl shadow-indigo-500/40">
+              <Sparkles size={22} className="text-white" />
             </div>
-            <span className="text-xl font-bold text-white tracking-tight">
-              AutoMarketer
-            </span>
-          </div>
-          <span className="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] ml-[52px]">
-            AI-Powered Platform
-          </span>
-        </div>
-
-        <div className="relative z-10 space-y-8">
-          <div>
-            <h2 className="text-3xl font-bold text-white leading-tight mb-3">
-              Start growing your
-              <br />
-              business today
-            </h2>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-              Join marketers using AI to create better content, faster
-              campaigns, and smarter strategies.
-            </p>
+            <div>
+              <div className="text-xl font-bold text-white tracking-tight">
+                AutoMarketer
+              </div>
+              <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-[0.2em]">
+                AI Marketing Suite
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {benefits.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm"
-              >
-                <div className="text-blue-400">{item.icon}</div>
-                <span className="text-sm text-slate-300 font-medium">
-                  {item.text}
+          {/* Hero copy + benefit cards + testimonial */}
+          <div className="space-y-10">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/10 border border-emerald-400/30 backdrop-blur mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-semibold text-emerald-200 tracking-wide">
+                  Free 14-day trial · No credit card
                 </span>
               </div>
-            ))}
-          </div>
+              <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight mb-5">
+                Start growing
+                <br />
+                <span className="bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 bg-clip-text text-transparent">
+                  in minutes.
+                </span>
+              </h2>
+              <p className="text-slate-300 text-base leading-relaxed max-w-md">
+                Join marketing teams using AutoMarketer to ship campaigns
+                faster, qualify leads automatically, and turn data into growth.
+              </p>
+            </div>
 
-          <div className="bg-white/5 border border-white/10 rounded-xl p-5 backdrop-blur-sm">
-            <p className="text-slate-300 text-sm italic leading-relaxed">
-              "AutoMarketer has transformed how we manage our marketing
-              campaigns. The AI content generation saves us 20+ hours per week."
-            </p>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                SK
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Sarah Kim</p>
-                <p className="text-xs text-slate-500">
-                  Head of Marketing, TechCorp
+            {/* Benefits */}
+            <div className="space-y-2.5">
+              {benefits.map((b, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm"
+                >
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500/30 to-fuchsia-500/30 border border-white/10 flex items-center justify-center text-indigo-200">
+                    {b.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-white">
+                      {b.label}
+                    </div>
+                    <div className="text-xs text-slate-400">{b.sub}</div>
+                  </div>
+                  <Check size={16} className="text-emerald-400" />
+                </div>
+              ))}
+            </div>
+
+            {/* Testimonial card */}
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/30 to-fuchsia-500/30 rounded-2xl blur-xl opacity-50" />
+              <div className="relative bg-slate-900/80 border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
+                <div className="flex gap-0.5 mb-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star
+                      key={i}
+                      size={12}
+                      className="fill-amber-300 text-amber-300"
+                    />
+                  ))}
+                </div>
+                <p className="text-slate-200 text-sm italic leading-relaxed mb-4">
+                  "AutoMarketer cut our content production time by 70%. The AI
+                  recommendations alone pay for themselves every week."
                 </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-fuchsia-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                    SK
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-white">
+                      Sarah Kim
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      Head of Marketing · TechCorp
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <p className="text-xs text-slate-600 relative z-10">
-          © {new Date().getFullYear()} AutoMarketer AI. All rights reserved.
-        </p>
+          {/* Footer trust badges */}
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <Shield size={12} className="text-emerald-400" />
+              <span>SOC 2 · GDPR compliant</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-slate-400">
+              <TrendingUp size={12} className="text-indigo-300" />
+              <span>500+ marketing teams</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Right Panel - Register Form */}
+      {/* Right Panel — Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-[420px]">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20">
+            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <Sparkles size={20} className="text-white" />
             </div>
             <span className="text-xl font-bold text-slate-900">
@@ -155,11 +222,11 @@ export const Register: React.FC = () => {
           </div>
 
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
               Create your account
             </h1>
             <p className="text-slate-500 text-sm">
-              Get started with your free AutoMarketer account
+              Get started with your free AutoMarketer workspace.
             </p>
           </div>
 
@@ -185,7 +252,7 @@ export const Register: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all bg-white"
+                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all bg-white"
                 />
               </div>
             </div>
@@ -205,7 +272,7 @@ export const Register: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all bg-white"
+                  className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all bg-white"
                 />
               </div>
             </div>
@@ -221,7 +288,7 @@ export const Register: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 6 characters"
-                  className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all bg-white pr-10"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all bg-white pr-10"
                 />
                 <button
                   type="button"
@@ -266,7 +333,7 @@ export const Register: React.FC = () => {
                   className={`w-full px-4 py-3 border rounded-lg text-slate-900 text-sm placeholder-slate-400 focus:ring-2 outline-none transition-all bg-white pr-10 ${
                     confirmPassword && confirmPassword !== password
                       ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
-                      : "border-slate-300 focus:border-blue-500 focus:ring-blue-500/20"
+                      : "border-slate-300 focus:border-indigo-500 focus:ring-indigo-500/20"
                   }`}
                 />
                 {confirmPassword && confirmPassword === password && (
@@ -283,12 +350,12 @@ export const Register: React.FC = () => {
                 <input
                   type="checkbox"
                   required
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5"
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 mt-0.5"
                 />
                 <span className="text-xs text-slate-500 leading-relaxed">
                   I agree to the{" "}
-                  <span className="text-blue-600">Terms of Service</span> and{" "}
-                  <span className="text-blue-600">Privacy Policy</span>
+                  <span className="text-indigo-600">Terms of Service</span> and{" "}
+                  <span className="text-indigo-600">Privacy Policy</span>
                 </span>
               </label>
             </div>
@@ -296,7 +363,7 @@ export const Register: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-600/20"
+              className="w-full bg-gradient-to-r from-indigo-600 to-fuchsia-600 hover:from-indigo-700 hover:to-fuchsia-700 disabled:opacity-60 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -314,7 +381,7 @@ export const Register: React.FC = () => {
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-blue-600 hover:text-blue-700 font-semibold"
+                className="text-indigo-600 hover:text-indigo-700 font-semibold"
               >
                 Sign in
               </Link>

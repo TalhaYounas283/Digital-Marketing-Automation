@@ -1,5 +1,5 @@
 {
-  "name": "AutoMarketer AI - Mock Workflow",
+  "name": "AutoMarketer AI - Groq (Llama 3.3 70B) Workflow",
   "nodes": [
     {
       "parameters": {
@@ -8,322 +8,121 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "webhook-node",
-      "name": "Webhook",
+      "id": "01-webhook",
+      "name": "AutoMarketer Webhook",
       "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [250, 300],
+      "typeVersion": 1.1,
+      "position": [200, 320],
       "webhookId": "automarketer-webhook"
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body;\nconst action = body.action;\nconst payload = body;\n\ndelete payload.action;\n\nreturn {\n  json: {\n    action,\n    ...payload\n  }\n};"
+        "language": "javaScript",
+        "jsCode": "// Build the Groq (Llama 3.3) prompt based on incoming action.\n// Frontend sends: { action, ...payload }\n\nconst body = $input.first().json.body || $input.first().json;\nconst action = body.action || 'chat_response';\n\nconst prompts = {\n  generate_copy: {\n    system: 'You are an expert marketing copywriter. Return ONLY a JSON object of the form {\"posts\": [string, string, string]} with exactly 3 short post drafts. No prose, no explanation.',\n    user: `Topic: ${body.topic}\\nPlatform: ${body.platform}\\nTone: ${body.tone}\\nAudience: ${body.audience}\\n\\nReturn JSON {\"posts\":[...]} with 3 distinct post drafts.`\n  },\n  generate_strategy: {\n    system: 'You are a senior digital strategist. Return ONLY a JSON object with this exact shape: {\"overview\": string, \"targetAudience\": string, \"keyThemes\": string[], \"suggestedPosts\": [{\"platform\": string, \"content\": string, \"hashtags\": string[], \"bestTime\": string}]}',\n    user: `Product: ${body.productName}\\nGoal: ${body.goal}\\n\\nDraft a comprehensive multi-channel campaign strategy. Include 2-4 suggested posts across LinkedIn, Twitter, Instagram, or Facebook.`\n  },\n  analyze_lead: {\n    system: 'You are a B2B lead-scoring AI. Return ONLY a JSON object: {\"score\": number 0-100, \"reason\": short string}',\n    user: `Lead: ${body.name}\\nSource: ${body.source}\\nInteractions: ${body.interactions}\\n\\nScore this lead 0-100 and explain in one short sentence.`\n  },\n  analyze_competitor: {\n    system: 'You are a strategic analyst. Return ONLY a JSON object: {\"strengths\": string[], \"weaknesses\": string[], \"opportunities\": string[], \"threats\": string[], \"strategicAdvice\": string}',\n    user: `Competitor: ${body.competitorName}\\nIndustry: ${body.industry}\\n\\nProduce a SWOT analysis with 2-4 bullets per quadrant and one paragraph of strategic advice for outcompeting them.`\n  },\n  optimize_content: {\n    system: 'You rewrite marketing copy. Return ONLY a JSON object: {\"original\": string, \"optimized\": string, \"changesMade\": string}',\n    user: `Original: ${body.originalText}\\nGoal: ${body.goal}\\n\\nRewrite to meet the goal. \"changesMade\" should be one short sentence describing what you changed.`\n  },\n  generate_persona: {\n    system: 'You build customer personas. Return ONLY a JSON object: {\"name\": string, \"ageRange\": string, \"occupation\": string, \"incomeLevel\": string, \"bio\": string, \"goals\": string[], \"frustrations\": string[], \"motivations\": string[], \"preferredChannels\": string[]}',\n    user: `Product: ${body.productName}\\nIndustry: ${body.industry}\\nRegion: ${body.region || 'Global'}\\n\\nBuild a detailed customer persona with realistic name, demographics, and 3-4 items for each list.`\n  },\n  generate_seo: {\n    system: 'You are an SEO researcher. Return ONLY a JSON object: {\"keywords\": [{\"term\": string, \"volume\": string, \"difficulty\": string}], \"contentIdeas\": string[], \"competitorUrls\": string[]}',\n    user: `Topic: ${body.topic}\\nNiche: ${body.niche}\\n\\nReturn 5 keyword ideas (with rough volume estimates and difficulty High/Medium/Low), 3 content ideas, and 2 competitor URLs.`\n  },\n  chat_response: {\n    system: 'You are Kimi, a helpful AI marketing assistant for the AutoMarketer platform. Be concise (1-3 sentences), specific, and actionable. Reply as plain text. No JSON, no markdown.',\n    user: body.message || ''\n  }\n};\n\nconst cfg = prompts[action] || prompts.chat_response;\nconst expectsJson = action !== 'chat_response';\n\nreturn [{\n  json: {\n    action,\n    expectsJson,\n    payload: {\n      model: 'llama-3.3-70b-versatile',\n      messages: [\n        { role: 'system', content: cfg.system },\n        { role: 'user', content: cfg.user }\n      ],\n      temperature: 0.7,\n      max_tokens: 1500,\n      ...(expectsJson ? { response_format: { type: 'json_object' } } : {})\n    }\n  }\n}];"
       },
-      "id": "code-parse",
-      "name": "Parse Request",
+      "id": "02-build-prompt",
+      "name": "Build LLM Prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [470, 300]
+      "position": [450, 320]
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "generate_copy",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              },
-              "renameOutput": true,
-              "outputKey": "generate_copy"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "generate_strategy",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              },
-              "renameOutput": true,
-              "outputKey": "generate_strategy"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "analyze_lead",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              },
-              "renameOutput": true,
-              "outputKey": "analyze_lead"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict"
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.action }}",
-                    "rightValue": "optimize_content",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    }
-                  }
-                ]
-              },
-              "renameOutput": true,
-              "outputKey": "optimize_content"
+              "name": "Content-Type",
+              "value": "application/json"
             }
           ]
         },
-        "options": {}
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "timeout": 60000
+        }
       },
-      "id": "switch-node",
-      "name": "Route Action",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
-      "position": [690, 300]
+      "id": "03-groq-call",
+      "name": "Groq (Llama 3.3 70B)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [700, 320],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "groq-credential",
+          "name": "Groq Bearer Token"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "const { topic, platform, tone, audience } = $input.first().json;\n\nconst posts = [\n  `Excited to share our latest thoughts on ${topic}. It's time to rethink how we approach ${audience}. \\n\\n#${topic.replace(/\\s+/g, '')} #Innovation`,\n  `Hot take: ${topic} is the future. \\n\\nWe've been seeing strong results. What are your thoughts? \\n\\n#${tone} #TechTrends`,\n  `Meaningful change starts with ${topic}. \\n\\nDesigned for ${audience} who demand excellence. \\n\\n#Inspiration #Leadership`\n];\n\nreturn {\n  json: posts\n};"
+        "language": "javaScript",
+        "jsCode": "// Parse Groq's response into the shape the frontend expects.\n// Groq returns OpenAI-compatible chat completion format.\n\nconst llmResp = $input.first().json;\nconst priorContext = $('Build LLM Prompt').first().json;\nconst action = priorContext.action;\nconst expectsJson = priorContext.expectsJson;\n\nlet content = llmResp.choices?.[0]?.message?.content?.trim() || '';\n\nif (!expectsJson) {\n  // chat_response — return a plain string\n  return [{ json: { result: content } }];\n}\n\n// Strip markdown fences if present\nconst stripped = content.replace(/^```(?:json)?\\s*|\\s*```$/g, '').trim();\nlet parsed;\ntry {\n  parsed = JSON.parse(stripped);\n} catch (e) {\n  const match = stripped.match(/[\\[{][\\s\\S]+[\\]}]/);\n  if (match) {\n    parsed = JSON.parse(match[0]);\n  } else {\n    throw new Error(`LLM returned non-JSON for action ${action}: ${content.slice(0, 200)}`);\n  }\n}\n\n// generate_copy expects a bare array; the LLM returns {posts:[...]}. Unwrap it.\nif (action === 'generate_copy') {\n  if (Array.isArray(parsed)) {\n    return [{ json: { result: parsed } }];\n  }\n  if (parsed && Array.isArray(parsed.posts)) {\n    return [{ json: { result: parsed.posts } }];\n  }\n  throw new Error('generate_copy expected array or {posts:[]}');\n}\n\nreturn [{ json: { result: parsed } }];"
       },
-      "id": "mock-copy",
-      "name": "Mock Copy Generator",
+      "id": "04-parse-response",
+      "name": "Parse LLM Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [910, 100]
-    },
-    {
-      "parameters": {
-        "jsCode": "const { productName, goal } = $input.first().json;\n\nconst strategy = {\n  overview: `A comprehensive digital strategy for ${productName} focused on ${goal}. The approach leverages cross-channel synergy and data-driven insights.`,\n  targetAudience: \"Tech-savvy professionals aged 25-45.\",\n  keyThemes: [\"Efficiency\", \"Future of Work\", \"Data-Driven\"],\n  suggestedPosts: [\n    {\n      platform: \"LinkedIn\",\n      content: `${productName} is redefining industry standards for ${goal}. #BusinessGrowth`,\n      hashtags: [\"Innovation\", \"B2B\"],\n      bestTime: \"Tuesday 10:00 AM\"\n    },\n    {\n      platform: \"Twitter\",\n      content: `Stop wasting time. ${productName} is here. #${productName.replace(/\\s+/g, '')}`,\n      hashtags: [\"Productivity\", \"Tech\"],\n      bestTime: \"Wednesday 02:00 PM\"\n    }\n  ]\n};\n\nreturn {\n  json: strategy\n};"
-      },
-      "id": "mock-strategy",
-      "name": "Mock Strategy",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [910, 250]
-    },
-    {
-      "parameters": {
-        "jsCode": "const { name, source, interactions } = $input.first().json;\n\nconst baseScore = 60;\nconst randomFactor = Math.floor(Math.random() * 30);\n\nconst result = {\n  score: Math.min(100, baseScore + randomFactor),\n  reason: `High engagement level detected for ${name}. Analysis suggests strong intent based on ${source} interactions and ${interactions} engagement history.`\n};\n\nreturn {\n  json: result\n};"
-      },
-      "id": "mock-lead",
-      "name": "Mock Lead Scorer",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [910, 400]
-    },
-    {
-      "parameters": {
-        "jsCode": "const { originalText, goal } = $input.first().json;\n\nconst result = {\n  original: originalText,\n  optimized: `[Optimized for ${goal}] \\n\\n${originalText} \\n\\nClick here to learn more.`,\n  changesMade: \"Added an engaging hook, improved sentence flow, and included a clear call-to-action.\"\n};\n\nreturn {\n  json: result\n};"
-      },
-      "id": "mock-optimize",
-      "name": "Mock Optimizer",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [910, 550]
+      "position": [950, 320]
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
+        "responseBody": "={{ $json.result }}",
         "options": {}
       },
-      "id": "respond-copy",
-      "name": "Respond Copy",
+      "id": "05-respond",
+      "name": "Respond to Frontend",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [1130, 100]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "respond-strategy",
-      "name": "Respond Strategy",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1130, 250]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "respond-lead",
-      "name": "Respond Lead",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1130, 400]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      },
-      "id": "respond-optimize",
-      "name": "Respond Optimize",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1130, 550]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "{ \"error\": \"Unknown action\" }",
-        "options": {}
-      },
-      "id": "respond-error",
-      "name": "Respond Error",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [910, 700]
+      "position": [1200, 320]
     }
   ],
   "connections": {
-    "Webhook": {
+    "AutoMarketer Webhook": {
       "main": [
         [
           {
-            "node": "Parse Request",
+            "node": "Build LLM Prompt",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Parse Request": {
+    "Build LLM Prompt": {
       "main": [
         [
           {
-            "node": "Route Action",
+            "node": "Groq (Llama 3.3 70B)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Route Action": {
+    "Groq (Llama 3.3 70B)": {
       "main": [
         [
           {
-            "node": "Mock Copy Generator",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Mock Strategy",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Mock Lead Scorer",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Mock Optimizer",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Respond Error",
+            "node": "Parse LLM Response",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Mock Copy Generator": {
+    "Parse LLM Response": {
       "main": [
         [
           {
-            "node": "Respond Copy",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mock Strategy": {
-      "main": [
-        [
-          {
-            "node": "Respond Strategy",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mock Lead Scorer": {
-      "main": [
-        [
-          {
-            "node": "Respond Lead",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Mock Optimizer": {
-      "main": [
-        [
-          {
-            "node": "Respond Optimize",
+            "node": "Respond to Frontend",
             "type": "main",
             "index": 0
           }
@@ -331,15 +130,16 @@
       ]
     }
   },
-  "pinData": {},
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "staticData": null,
-  "tags": [],
-  "triggerCount": 0,
-  "meta": {
-    "templateCredsSetupCompleted": false,
-    "instanceId": ""
-  }
+  "tags": [
+    {
+      "name": "AutoMarketer"
+    },
+    {
+      "name": "AI"
+    }
+  ]
 }
