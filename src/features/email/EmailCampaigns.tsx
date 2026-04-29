@@ -19,6 +19,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
+import { exportToCsv, stampedFilename } from "@/utils/exportCsv";
+import { useToast } from "@/contexts/ToastContext";
 
 interface EmailCampaign {
   id: string;
@@ -134,6 +136,25 @@ export const EmailCampaigns: React.FC = () => {
   const [selectedCampaign, setSelectedCampaign] = useState<EmailCampaign | null>(
     null,
   );
+  const { showToast } = useToast();
+
+  const handleExport = () => {
+    const rows = campaigns.map((c) => ({
+      Name: c.name,
+      Subject: c.subject,
+      Status: c.status,
+      Recipients: c.recipients,
+      "Open Rate (%)": c.openRate,
+      "Click Rate (%)": c.clickRate,
+      Template: c.template,
+      "Sent / Scheduled": c.sentDate || c.scheduledDate || "—",
+    }));
+    const count = exportToCsv(rows, stampedFilename("email_campaigns", "csv"));
+    showToast("Email campaigns exported", {
+      variant: "success",
+      description: `${count} campaigns downloaded as CSV.`,
+    });
+  };
 
   // New campaign form state
   const [newCampaign, setNewCampaign] = useState({
@@ -248,7 +269,11 @@ export const EmailCampaigns: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" icon={<Download size={18} />}>
+          <Button
+            variant="outline"
+            icon={<Download size={18} />}
+            onClick={handleExport}
+          >
             Export Report
           </Button>
           <Button icon={<Plus size={18} />} onClick={() => setIsCreateModalOpen(true)}>

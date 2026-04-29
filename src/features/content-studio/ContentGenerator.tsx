@@ -43,11 +43,23 @@ export const ContentGenerator: React.FC = () => {
           setContentToOptimize={actions.setContentToOptimize}
           optimizationGoal={state.optimizationGoal}
           setOptimizationGoal={actions.setOptimizationGoal}
+          competitorName={state.competitorName}
+          setCompetitorName={actions.setCompetitorName}
+          competitorIndustry={state.competitorIndustry}
+          setCompetitorIndustry={actions.setCompetitorIndustry}
+          personaProduct={state.personaProduct}
+          setPersonaProduct={actions.setPersonaProduct}
+          personaIndustry={state.personaIndustry}
+          setPersonaIndustry={actions.setPersonaIndustry}
+          personaRegion={state.personaRegion}
+          setPersonaRegion={actions.setPersonaRegion}
           handlers={{
             handleGeneratePost: actions.handleGeneratePost,
             handleGenerateStrategy: actions.handleGenerateStrategy,
             handleSeoResearch: actions.handleSeoResearch,
             handleOptimizeContent: actions.handleOptimizeContent,
+            handleAnalyzeCompetitor: actions.handleAnalyzeCompetitor,
+            handleGeneratePersona: actions.handleGeneratePersona,
           }}
         />
 
@@ -58,6 +70,8 @@ export const ContentGenerator: React.FC = () => {
           strategy={state.strategy}
           optimizationResult={state.optimizationResult}
           seoResult={state.seoResult}
+          competitorResult={state.competitorResult}
+          personaResult={state.personaResult}
           generatedImage={state.generatedImage}
           isGeneratingImage={state.isGeneratingImage}
           copiedIndex={state.copiedIndex}

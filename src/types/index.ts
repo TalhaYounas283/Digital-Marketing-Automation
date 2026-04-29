@@ -67,7 +67,7 @@ export interface EmailCampaign {
 export interface AutomationWorkflow {
   id: string;
   name: string;
-  tool: "n8n" | "Zapier";
+  tool: "n8n";
   trigger: string;
   action: string;
   status: "Active" | "Paused";

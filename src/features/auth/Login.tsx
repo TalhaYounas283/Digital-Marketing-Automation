@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import {
   Sparkles,
   ArrowRight,
@@ -31,7 +32,7 @@ const features = [
   {
     icon: <Zap size={18} />,
     title: "Workflow Automation",
-    desc: "Automate with n8n and Zapier integrations",
+    desc: "Automate with n8n workflow orchestration",
   },
 ];
 
@@ -41,8 +42,24 @@ export const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const handleForgotPassword = () => {
+    if (!email) {
+      showToast("Enter your email first", {
+        variant: "warning",
+        description: "We need your email to send the reset link.",
+      });
+      return;
+    }
+    showToast("Reset link sent", {
+      variant: "success",
+      description: `Check ${email} for instructions.`,
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -199,12 +216,15 @@ export const Login: React.FC = () => {
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-slate-600">Remember me</span>
               </label>
               <button
                 type="button"
+                onClick={handleForgotPassword}
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
                 Forgot password?

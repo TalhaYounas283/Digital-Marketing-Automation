@@ -1,12 +1,22 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
 
+type ModalSize = "sm" | "md" | "lg" | "xl";
+
+const SIZE_TO_MAX_WIDTH: Record<ModalSize, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-2xl",
+  xl: "max-w-4xl",
+};
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
   maxWidth?: string;
+  size?: ModalSize;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -14,8 +24,10 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  maxWidth = "max-w-md",
+  maxWidth,
+  size = "md",
 }) => {
+  const widthClass = maxWidth ?? SIZE_TO_MAX_WIDTH[size];
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -43,7 +55,7 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Content */}
       <div
-        className={`bg-[var(--bg-card)] border border-[var(--border)] w-full ${maxWidth} p-6 rounded-2xl shadow-2xl transform transition-all scale-100 relative animate-fade-in z-10`}
+        className={`bg-[var(--bg-card)] border border-[var(--border)] w-full ${widthClass} p-6 rounded-2xl shadow-2xl transform transition-all scale-100 relative animate-fade-in z-10`}
       >
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-[var(--text-primary)] font-display">

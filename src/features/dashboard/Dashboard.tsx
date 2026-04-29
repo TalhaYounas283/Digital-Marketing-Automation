@@ -35,6 +35,7 @@ export const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const [kpiData, setKpiData] = useState<KPIData>(defaultKPI);
   const [isConnected, setIsConnected] = useState(false);
+  const [trafficRange, setTrafficRange] = useState<"7" | "30" | "90">("7");
 
   useEffect(() => {
     const unsubscribeMessage = websocketService.subscribe((data) => {
@@ -136,10 +137,16 @@ return (
                 Real-time website visits
               </p>
             </div>
-            <select className="px-3 py-2 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] bg-[var(--bg-card)] focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option>Last 7 Days</option>
-              <option>Last 30 Days</option>
-              <option>Last 90 Days</option>
+            <select
+              value={trafficRange}
+              onChange={(e) =>
+                setTrafficRange(e.target.value as "7" | "30" | "90")
+              }
+              className="px-3 py-2 text-sm border border-[var(--border)] rounded-lg text-[var(--text-secondary)] bg-[var(--bg-card)] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="7">Last 7 Days</option>
+              <option value="30">Last 30 Days</option>
+              <option value="90">Last 90 Days</option>
             </select>
           </div>
 

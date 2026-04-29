@@ -21,6 +21,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { exportToCsv, stampedFilename } from "@/utils/exportCsv";
+import { useToast } from "@/contexts/ToastContext";
 
 interface EngagementPoint {
   name: string;
@@ -104,8 +106,25 @@ const QuickStat = ({
 export const Analytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState<"6m" | "12m">("6m");
   const [refreshTick, setRefreshTick] = useState(0);
+  const { showToast } = useToast();
 
   const engagementData = timeRange === "12m" ? engagementData12M : engagementData6M;
+
+  const handleExport = () => {
+    const rows = engagementData.map((p) => ({
+      Month: p.name,
+      Twitter: p.twitter,
+      Instagram: p.instagram,
+      LinkedIn: p.linkedin,
+      Facebook: p.facebook,
+      Total: p.twitter + p.instagram + p.linkedin + p.facebook,
+    }));
+    const count = exportToCsv(rows, stampedFilename("analytics_engagement", "csv"));
+    showToast("Analytics exported", {
+      variant: "success",
+      description: `${count} rows downloaded as CSV.`,
+    });
+  };
 
   const stats = useMemo(() => {
     const jitter = refreshTick % 2 === 0 ? 0 : 1;
@@ -141,7 +160,11 @@ export const Analytics: React.FC = () => {
           >
             Refresh
           </Button>
-          <Button variant="outline" icon={<Download size={16} />}>
+          <Button
+            variant="outline"
+            icon={<Download size={16} />}
+            onClick={handleExport}
+          >
             Export
           </Button>
         </div>

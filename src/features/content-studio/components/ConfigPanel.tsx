@@ -30,11 +30,23 @@ interface ConfigPanelProps {
   setContentToOptimize: (v: string) => void;
   optimizationGoal: string;
   setOptimizationGoal: (v: string) => void;
+  competitorName: string;
+  setCompetitorName: (v: string) => void;
+  competitorIndustry: string;
+  setCompetitorIndustry: (v: string) => void;
+  personaProduct: string;
+  setPersonaProduct: (v: string) => void;
+  personaIndustry: string;
+  setPersonaIndustry: (v: string) => void;
+  personaRegion: string;
+  setPersonaRegion: (v: string) => void;
   handlers: {
     handleGeneratePost: () => void;
     handleGenerateStrategy: () => void;
     handleSeoResearch: () => void;
     handleOptimizeContent: () => void;
+    handleAnalyzeCompetitor: () => void;
+    handleGeneratePersona: () => void;
   };
 }
 
@@ -62,6 +74,16 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
   setContentToOptimize,
   optimizationGoal,
   setOptimizationGoal,
+  competitorName,
+  setCompetitorName,
+  competitorIndustry,
+  setCompetitorIndustry,
+  personaProduct,
+  setPersonaProduct,
+  personaIndustry,
+  setPersonaIndustry,
+  personaRegion,
+  setPersonaRegion,
   handlers,
 }) => {
   const getTabTitle = () => {
@@ -74,6 +96,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         return "Target Research";
       case "optimize":
         return "Content Refinement";
+      case "competitor":
+        return "Competitor Analysis";
+      case "persona":
+        return "Audience Persona";
     }
   };
 
@@ -87,6 +113,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         return "Identify key areas for search optimization.";
       case "optimize":
         return "Paste content to analyze and improve.";
+      case "competitor":
+        return "Get a SWOT analysis and strategic advice on a rival.";
+      case "persona":
+        return "Generate a detailed customer persona profile.";
     }
   };
 
@@ -98,7 +128,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         ? !productName || !campaignGoal
         : activeTab === "seo"
           ? !seoTopic || !seoNiche
-          : !contentToOptimize);
+          : activeTab === "optimize"
+            ? !contentToOptimize
+            : activeTab === "competitor"
+              ? !competitorName || !competitorIndustry
+              : !personaProduct || !personaIndustry);
 
   const getButtonText = () => {
     if (isGenerating) return "Processing...";
@@ -111,6 +145,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         return "Run SEO Analysis";
       case "optimize":
         return "Optimize My Content";
+      case "competitor":
+        return "Analyze Competitor";
+      case "persona":
+        return "Generate Persona";
     }
   };
 
@@ -127,6 +165,12 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
         break;
       case "optimize":
         handlers.handleOptimizeContent();
+        break;
+      case "competitor":
+        handlers.handleAnalyzeCompetitor();
+        break;
+      case "persona":
+        handlers.handleGeneratePersona();
         break;
     }
   };
@@ -267,6 +311,58 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
                   value: "Optimize for SEO keywords",
                 },
               ]}
+              className=""
+            />
+          </>
+        )}
+
+        {activeTab === "competitor" && (
+          <>
+            <Input
+              label="Competitor Name"
+              value={competitorName}
+              onChange={(e) => setCompetitorName(e.target.value)}
+              placeholder="e.g. Acme Corp"
+              className=""
+            />
+            <Input
+              label="Industry / Vertical"
+              value={competitorIndustry}
+              onChange={(e) => setCompetitorIndustry(e.target.value)}
+              placeholder="e.g. Marketing automation SaaS"
+              className=""
+            />
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
+              <Lightbulb size={20} className="text-blue-600 shrink-0" />
+              <p className="text-xs text-blue-700 leading-relaxed">
+                Kimi K2 will produce a SWOT analysis and strategic advice for
+                positioning against this competitor.
+              </p>
+            </div>
+          </>
+        )}
+
+        {activeTab === "persona" && (
+          <>
+            <Input
+              label="Product / Service"
+              value={personaProduct}
+              onChange={(e) => setPersonaProduct(e.target.value)}
+              placeholder="e.g. AutoMarketer dashboard"
+              className=""
+            />
+            <Input
+              label="Industry"
+              value={personaIndustry}
+              onChange={(e) => setPersonaIndustry(e.target.value)}
+              placeholder="e.g. Marketing technology"
+              className=""
+            />
+            <Input
+              label="Region (optional)"
+              value={personaRegion}
+              onChange={(e) => setPersonaRegion(e.target.value)}
+              placeholder="e.g. North America"
               className=""
             />
           </>

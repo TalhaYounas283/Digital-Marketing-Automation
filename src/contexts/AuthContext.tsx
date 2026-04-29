@@ -1,46 +1,92 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface User {
+export type UserRole = "owner" | "manager" | "admin";
+
+export interface AuthUser {
+  id: string;
   name: string;
   email: string;
+  role: UserRole;
+  organization?: string;
 }
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: User | null;
-  login: (email: string, name: string) => void;
+  user: AuthUser | null;
+  token: string | null;
+  login: (email: string, name: string, role?: UserRole) => void;
   logout: () => void;
+  updateUser: (patch: Partial<AuthUser>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const STORAGE_KEY = "automarketer_user";
+const TOKEN_KEY = "automarketer_token";
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+const generateMockToken = () =>
+  `mock.${btoa(`${Date.now()}.${Math.random().toString(36).slice(2)}`)}`;
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('automarketer_user');
+    const storedUser = localStorage.getItem(STORAGE_KEY);
+    const storedToken = localStorage.getItem(TOKEN_KEY);
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
+    if (storedToken) setToken(storedToken);
   }, []);
 
-  const login = (email: string, name: string) => {
-    const newUser = { email, name };
+  const login: AuthContextType["login"] = (email, name, role = "manager") => {
+    const newUser: AuthUser = {
+      id: `user_${Date.now()}`,
+      name,
+      email,
+      role,
+      organization: "AutoMarketer Workspace",
+    };
+    const newToken = generateMockToken();
     setUser(newUser);
-    setIsAuthenticated(true);
-    localStorage.setItem('automarketer_user', JSON.stringify(newUser));
+    setToken(newToken);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newUser));
+    localStorage.setItem(TOKEN_KEY, newToken);
   };
 
   const logout = () => {
     setUser(null);
-    setIsAuthenticated(false);
-    localStorage.removeItem('automarketer_user');
+    setToken(null);
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+  };
+
+  const updateUser: AuthContextType["updateUser"] = (patch) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...patch };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: !!user && !!token,
+        user,
+        token,
+        login,
+        logout,
+        updateUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -48,6 +94,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 };

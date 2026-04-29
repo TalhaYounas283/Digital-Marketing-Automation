@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Copy,
@@ -21,6 +22,8 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
+import { exportToJson, stampedFilename } from "@/utils/exportCsv";
+import { useToast } from "@/contexts/ToastContext";
 
 interface Template {
   id: string;
@@ -212,6 +215,8 @@ export const Templates: React.FC = () => {
   );
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showPremiumOnly, setShowPremiumOnly] = useState(false);
+  const { showToast } = useToast();
+  const navigate = useNavigate();
 
   const filteredTemplates = templates.filter((template) => {
     const matchesSearch =
@@ -235,6 +240,23 @@ export const Templates: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleExportAll = () => {
+    const list = filteredTemplates.length ? filteredTemplates : templates;
+    exportToJson(list, stampedFilename("templates", "json"));
+    showToast("Templates exported", {
+      variant: "success",
+      description: `${list.length} templates downloaded as JSON.`,
+    });
+  };
+
+  const handleCreateCustom = () => {
+    showToast("Opening AI Content Generator", {
+      variant: "info",
+      description: "Draft your custom template with Kimi K2.",
+    });
+    navigate("/generate");
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -248,10 +270,16 @@ export const Templates: React.FC = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" icon={<Download size={18} />}>
+          <Button
+            variant="outline"
+            icon={<Download size={18} />}
+            onClick={handleExportAll}
+          >
             Export All
           </Button>
-          <Button icon={<Sparkles size={18} />}>Create Custom</Button>
+          <Button icon={<Sparkles size={18} />} onClick={handleCreateCustom}>
+            Create Custom
+          </Button>
         </div>
       </div>
 

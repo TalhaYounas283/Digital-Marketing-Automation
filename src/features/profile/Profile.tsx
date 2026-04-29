@@ -8,32 +8,113 @@ import {
   Save,
   ArrowRight,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
+
+interface ProfileForm {
+  name: string;
+  email: string;
+  workspace: string;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+const buildInitial = (
+  name: string | undefined,
+  email: string | undefined,
+  organization: string | undefined,
+): ProfileForm => ({
+  name: name ?? "",
+  email: email ?? "",
+  workspace: organization ?? "AutoMarketer Workspace",
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
 
 export const Profile: React.FC = () => {
+  const { user, updateUser } = useAuth();
+  const { showToast } = useToast();
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [form, setForm] = useState<ProfileForm>(
+    buildInitial(user?.name, user?.email, user?.organization),
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const setField = <K extends keyof ProfileForm>(key: K, value: ProfileForm[K]) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    if (file.size > 800 * 1024) {
+      showToast("Image too large", {
+        variant: "warning",
+        description: "Choose a file under 800 KB.",
+      });
+      return;
     }
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePic(reader.result as string);
+      showToast("Photo updated", { variant: "success" });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDiscard = () => {
+    setForm(buildInitial(user?.name, user?.email, user?.organization));
+    showToast("Changes discarded", { variant: "info" });
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.name.trim() || !form.email.trim()) {
+      showToast("Name and email are required", { variant: "warning" });
+      return;
+    }
+
+    const wantsPasswordChange =
+      form.newPassword || form.confirmPassword || form.currentPassword;
+    if (wantsPasswordChange) {
+      if (!form.currentPassword) {
+        showToast("Enter your current password", { variant: "warning" });
+        return;
+      }
+      if (form.newPassword.length < 8) {
+        showToast("New password must be at least 8 characters", {
+          variant: "warning",
+        });
+        return;
+      }
+      if (form.newPassword !== form.confirmPassword) {
+        showToast("Passwords do not match", { variant: "error" });
+        return;
+      }
+    }
+
+    updateUser({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      organization: form.workspace.trim(),
+    });
+
+    setForm((prev) => ({
+      ...prev,
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    }));
     setIsSuccess(true);
     setTimeout(() => setIsSuccess(false), 3000);
+    showToast("Profile saved", { variant: "success" });
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in transition-colors duration-200 pb-12">
-      {/* Page Header */}
       <div className="flex flex-col gap-1">
         <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
           Account Settings
@@ -54,7 +135,6 @@ export const Profile: React.FC = () => {
         onSubmit={handleSave}
         className="grid grid-cols-1 lg:grid-cols-3 gap-8"
       >
-        {/* Sidebar - Profile Picture */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-8 text-center shadow-sm">
             <div className="relative group mx-auto w-32 h-32 mb-6">
@@ -86,10 +166,14 @@ export const Profile: React.FC = () => {
             </div>
 
             <h3 className="font-bold text-[var(--text-primary)] text-lg">
-              Alex Marketing
+              {form.name || "Your Name"}
             </h3>
             <p className="text-[var(--text-secondary)] text-sm mb-6">
-              Enterprise Plan
+              {user?.role === "admin"
+                ? "Administrator"
+                : user?.role === "owner"
+                  ? "Business Owner"
+                  : "Marketing Manager"}
             </p>
 
             <button
@@ -105,14 +189,11 @@ export const Profile: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Profile Details */}
           <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
             <div className="px-8 py-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-main)] opacity-70">
               <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                <User size={18} className="text-blue-600" /> Personal
-                Information
+                <User size={18} className="text-blue-600" /> Personal Information
               </h3>
             </div>
             <div className="p-8 space-y-6">
@@ -123,7 +204,8 @@ export const Profile: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    defaultValue="Alex Marketing"
+                    value={form.name}
+                    onChange={(e) => setField("name", e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     placeholder="Enter your name"
                   />
@@ -139,7 +221,8 @@ export const Profile: React.FC = () => {
                     />
                     <input
                       type="email"
-                      defaultValue="alex@automarketer.com"
+                      value={form.email}
+                      onChange={(e) => setField("email", e.target.value)}
                       className="w-full pl-11 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                       placeholder="Email address"
                     />
@@ -152,14 +235,14 @@ export const Profile: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  defaultValue="Alex's Agency"
+                  value={form.workspace}
+                  onChange={(e) => setField("workspace", e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                 />
               </div>
             </div>
           </section>
 
-          {/* Security */}
           <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] overflow-hidden shadow-sm">
             <div className="px-8 py-5 border-b border-[var(--border)] flex items-center justify-between bg-[var(--bg-main)] opacity-70">
               <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
@@ -175,6 +258,8 @@ export const Profile: React.FC = () => {
                   <input
                     type="password"
                     autoComplete="current-password"
+                    value={form.currentPassword}
+                    onChange={(e) => setField("currentPassword", e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                   />
                 </div>
@@ -186,6 +271,8 @@ export const Profile: React.FC = () => {
                     <input
                       type="password"
                       autoComplete="new-password"
+                      value={form.newPassword}
+                      onChange={(e) => setField("newPassword", e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     />
                   </div>
@@ -196,6 +283,10 @@ export const Profile: React.FC = () => {
                     <input
                       type="password"
                       autoComplete="new-password"
+                      value={form.confirmPassword}
+                      onChange={(e) =>
+                        setField("confirmPassword", e.target.value)
+                      }
                       className="w-full px-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-main)] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-[var(--text-primary)]"
                     />
                   </div>
@@ -207,6 +298,7 @@ export const Profile: React.FC = () => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
+              onClick={handleDiscard}
               className="px-6 py-3 rounded-xl border border-[var(--border)] font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-main)] transition-all text-sm"
             >
               Discard Changes

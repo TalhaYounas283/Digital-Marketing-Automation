@@ -9,8 +9,11 @@ import {
   Plus,
   Mail,
   Trash2,
+  Download,
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
+import { exportToCsv, stampedFilename } from "@/utils/exportCsv";
+import { useToast } from "@/contexts/ToastContext";
 
 const mockLeads: Lead[] = [
   {
@@ -45,6 +48,8 @@ export const LeadsManager: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newLead, setNewLead] = useState({ name: "", email: "", source: "" });
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | Lead["status"]>("all");
+  const { showToast } = useToast();
 
   const handleScoreLead = async (id: string, name: string, source: string) => {
     setAnalyzingId(id);
@@ -87,11 +92,30 @@ export const LeadsManager: React.FC = () => {
     setLeads((prev) => prev.filter((lead) => lead.id !== id));
   };
 
-  const filteredLeads = leads.filter(
-    (l) =>
+  const handleExportLeads = () => {
+    const list = filteredLeads.length ? filteredLeads : leads;
+    const rows = list.map((l) => ({
+      Name: l.name,
+      Email: l.email,
+      Source: l.source,
+      Status: l.status,
+      "AI Score": l.score,
+      "AI Analysis": l.aiAnalysis ?? "",
+    }));
+    const count = exportToCsv(rows, stampedFilename("leads", "csv"));
+    showToast("Leads exported", {
+      variant: "success",
+      description: `${count} leads downloaded as CSV.`,
+    });
+  };
+
+  const filteredLeads = leads.filter((l) => {
+    const matchesSearch =
       l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      l.email.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      l.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || l.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <div className="flex flex-col animate-fade-in pb-10">
@@ -105,13 +129,22 @@ export const LeadsManager: React.FC = () => {
             Track and qualify potential sales prospects with AI intelligence
           </p>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm"
-        >
-          <Plus size={18} />
-          Add New Lead
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportLeads}
+            className="px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-main)]"
+          >
+            <Download size={16} />
+            Export
+          </button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm"
+          >
+            <Plus size={18} />
+            Add New Lead
+          </button>
+        </div>
       </div>
 
       {/* Main Table Card */}
@@ -131,9 +164,25 @@ export const LeadsManager: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="px-4 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-xs font-bold text-[var(--text-secondary)] flex items-center gap-2 hover:bg-[var(--bg-main)] transition-colors">
-            <Filter size={16} /> Filter Results
-          </button>
+          <div className="relative flex items-center">
+            <Filter
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as typeof statusFilter)
+              }
+              className="appearance-none pl-9 pr-8 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-main)] cursor-pointer outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option value="all">All Statuses</option>
+              <option value="New">New</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Qualified">Qualified</option>
+              <option value="Converted">Converted</option>
+            </select>
+          </div>
         </div>
 
         <div className="overflow-x-auto">

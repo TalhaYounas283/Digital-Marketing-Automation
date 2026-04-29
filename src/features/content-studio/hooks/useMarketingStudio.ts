@@ -5,6 +5,8 @@ import {
   CampaignStrategy,
   OptimizationResult,
   SeoResult,
+  SwotAnalysis,
+  Persona,
 } from "@/types";
 import {
   generateMarketingCopy,
@@ -12,9 +14,17 @@ import {
   generateCampaignStrategy,
   optimizeContent,
   generateSeoKeywords,
+  analyzeCompetitor,
+  generateAudiencePersona,
 } from "@/services/aiService";
 
-export type ContentTab = "quick" | "campaign" | "optimize" | "seo";
+export type ContentTab =
+  | "quick"
+  | "campaign"
+  | "seo"
+  | "optimize"
+  | "competitor"
+  | "persona";
 
 export const useMarketingStudio = () => {
   const [activeTab, setActiveTab] = useState<ContentTab>("quick");
@@ -43,6 +53,19 @@ export const useMarketingStudio = () => {
   const [seoTopic, setSeoTopic] = useState("");
   const [seoNiche, setSeoNiche] = useState("");
   const [seoResult, setSeoResult] = useState<SeoResult | null>(null);
+
+  // Competitor State
+  const [competitorName, setCompetitorName] = useState("");
+  const [competitorIndustry, setCompetitorIndustry] = useState("");
+  const [competitorResult, setCompetitorResult] = useState<SwotAnalysis | null>(
+    null,
+  );
+
+  // Persona State
+  const [personaProduct, setPersonaProduct] = useState("");
+  const [personaIndustry, setPersonaIndustry] = useState("");
+  const [personaRegion, setPersonaRegion] = useState("");
+  const [personaResult, setPersonaResult] = useState<Persona | null>(null);
 
   // Shared State
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -106,6 +129,34 @@ export const useMarketingStudio = () => {
     }
   };
 
+  const handleAnalyzeCompetitor = async () => {
+    if (!competitorName || !competitorIndustry) return;
+    setIsGenerating(true);
+    setCompetitorResult(null);
+    try {
+      const result = await analyzeCompetitor(competitorName, competitorIndustry);
+      setCompetitorResult(result);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleGeneratePersona = async () => {
+    if (!personaProduct || !personaIndustry) return;
+    setIsGenerating(true);
+    setPersonaResult(null);
+    try {
+      const result = await generateAudiencePersona(
+        personaProduct,
+        personaIndustry,
+        personaRegion,
+      );
+      setPersonaResult(result);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleGenerateImage = async (promptText: string) => {
     setIsGeneratingImage(true);
     try {
@@ -128,7 +179,11 @@ export const useMarketingStudio = () => {
     }
   };
 
-  const isThinkingMode = activeTab === "campaign" || activeTab === "seo";
+  const isThinkingMode =
+    activeTab === "campaign" ||
+    activeTab === "seo" ||
+    activeTab === "competitor" ||
+    activeTab === "persona";
 
   return {
     state: {
@@ -147,6 +202,13 @@ export const useMarketingStudio = () => {
       seoTopic,
       seoNiche,
       seoResult,
+      competitorName,
+      competitorIndustry,
+      competitorResult,
+      personaProduct,
+      personaIndustry,
+      personaRegion,
+      personaResult,
       generatedImage,
       isGenerating,
       isGeneratingImage,
@@ -166,10 +228,17 @@ export const useMarketingStudio = () => {
       setOptimizationGoal,
       setSeoTopic,
       setSeoNiche,
+      setCompetitorName,
+      setCompetitorIndustry,
+      setPersonaProduct,
+      setPersonaIndustry,
+      setPersonaRegion,
       handleGeneratePost,
       handleGenerateStrategy,
       handleOptimizeContent,
       handleSeoResearch,
+      handleAnalyzeCompetitor,
+      handleGeneratePersona,
       handleGenerateImage,
       copyToClipboard,
     },

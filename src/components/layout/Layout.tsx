@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Chatbot } from "@/features/chatbot/Chatbot";
 import {
   LayoutDashboard,
   BarChart3,
@@ -17,6 +19,9 @@ import {
   Calendar,
   FileText,
   Mail,
+  Workflow,
+  MessageCircle,
+  Lightbulb,
 } from "lucide-react";
 
 const NavItem = ({
@@ -62,19 +67,8 @@ export const Layout: React.FC = () => {
     navigate("/login");
   };
 
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    return document.documentElement.classList.contains("dark");
-  });
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === "dark";
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -94,6 +88,12 @@ export const Layout: React.FC = () => {
         return "Lead Management";
       case "/analytics":
         return "Analytics";
+      case "/insights":
+        return "AI Insights";
+      case "/workflows":
+        return "Workflow Builder";
+      case "/sentiment":
+        return "Sentiment Analysis";
       case "/settings":
         return "Settings";
       case "/profile":
@@ -166,6 +166,29 @@ export const Layout: React.FC = () => {
             icon={<BarChart3 size={18} />}
             label="Analytics"
           />
+
+          <div className="px-3 mt-8 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+            Intelligence
+          </div>
+          <NavItem
+            to="/insights"
+            icon={<Lightbulb size={18} />}
+            label="AI Insights"
+          />
+          <NavItem
+            to="/workflows"
+            icon={<Workflow size={18} />}
+            label="Workflows"
+          />
+          <NavItem
+            to="/sentiment"
+            icon={<MessageCircle size={18} />}
+            label="Sentiment"
+          />
+
+          <div className="px-3 mt-8 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+            Account
+          </div>
           <NavItem
             to="/settings"
             icon={<Settings size={18} />}
@@ -213,7 +236,7 @@ export const Layout: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <button
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="p-2 text-slate-400 hover:text-yellow-500 dark:hover:text-blue-400 transition-colors"
               title={
                 isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"
@@ -235,6 +258,7 @@ export const Layout: React.FC = () => {
             <Outlet />
           </div>
         </main>
+        <Chatbot />
       </div>
 
       {/* Mobile Menu Overlay */}
@@ -311,6 +335,32 @@ export const Layout: React.FC = () => {
                 label="Analytics"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
+
+              <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+                Intelligence
+              </div>
+              <NavItem
+                to="/insights"
+                icon={<Lightbulb size={18} />}
+                label="AI Insights"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/workflows"
+                icon={<Workflow size={18} />}
+                label="Workflows"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+              <NavItem
+                to="/sentiment"
+                icon={<MessageCircle size={18} />}
+                label="Sentiment"
+                onClick={() => setIsMobileMenuOpen(false)}
+              />
+
+              <div className="px-3 mt-6 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-[0.1em]">
+                Account
+              </div>
               <NavItem
                 to="/settings"
                 icon={<Settings size={18} />}

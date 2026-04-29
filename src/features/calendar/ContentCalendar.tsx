@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
+import { useToast } from "@/contexts/ToastContext";
 
 interface ScheduledPost {
   id: string;
@@ -96,6 +98,20 @@ export const ContentCalendar: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const goCreatePost = () => navigate("/generate");
+  const handleEditPost = (postTitle: string) => {
+    showToast(`Editing "${postTitle}"`, {
+      variant: "info",
+      description: "Opening AI Content Generator with this post.",
+    });
+    navigate("/generate");
+  };
+  const handlePreviewPost = (postTitle: string) => {
+    showToast(`Previewing "${postTitle}"`, { variant: "info" });
+  };
 
   const monthNames = [
     "January",
@@ -180,7 +196,9 @@ export const ContentCalendar: React.FC = () => {
               Week
             </button>
           </div>
-          <Button icon={<Plus size={18} />}>Create Post</Button>
+          <Button icon={<Plus size={18} />} onClick={goCreatePost}>
+            Create Post
+          </Button>
         </div>
       </div>
 
@@ -428,10 +446,18 @@ export const ContentCalendar: React.FC = () => {
                     {post.time}
                   </p>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditPost(post.title)}
+                    >
                       Edit
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handlePreviewPost(post.title)}
+                    >
                       Preview
                     </Button>
                   </div>
@@ -442,7 +468,11 @@ export const ContentCalendar: React.FC = () => {
             <div className="text-center py-8 text-[var(--text-secondary)]">
               <CalendarIcon size={48} className="mx-auto mb-3 opacity-50" />
               <p>No posts scheduled for this day</p>
-              <Button className="mt-4" icon={<Plus size={16} />}>
+              <Button
+                className="mt-4"
+                icon={<Plus size={16} />}
+                onClick={goCreatePost}
+              >
                 Create Post
               </Button>
             </div>

@@ -9,12 +9,16 @@ import {
   Check,
   Lightbulb,
   ExternalLink,
+  Swords,
+  UserSearch,
 } from "lucide-react";
 import {
   CampaignStrategy,
   OptimizationResult,
   SeoResult,
   Platform,
+  SwotAnalysis,
+  Persona,
 } from "@/types";
 import { ContentTab } from "../hooks/useMarketingStudio";
 
@@ -25,6 +29,8 @@ interface ResultsTerminalProps {
   strategy: CampaignStrategy | null;
   optimizationResult: OptimizationResult | null;
   seoResult: SeoResult | null;
+  competitorResult: SwotAnalysis | null;
+  personaResult: Persona | null;
   generatedImage: string | null;
   isGeneratingImage: boolean;
   copiedIndex: number | null;
@@ -43,6 +49,8 @@ export const ResultsTerminal: React.FC<ResultsTerminalProps> = ({
   strategy,
   optimizationResult,
   seoResult,
+  competitorResult,
+  personaResult,
   generatedImage,
   isGeneratingImage,
   copiedIndex,
@@ -51,7 +59,12 @@ export const ResultsTerminal: React.FC<ResultsTerminalProps> = ({
   actions,
 }) => {
   const hasResults =
-    generatedPosts.length || strategy || optimizationResult || seoResult;
+    generatedPosts.length ||
+    strategy ||
+    optimizationResult ||
+    seoResult ||
+    competitorResult ||
+    personaResult;
 
   if (isGenerating) {
     return (
@@ -333,6 +346,120 @@ export const ResultsTerminal: React.FC<ResultsTerminalProps> = ({
               >
                 <Copy size={14} /> Copy Content
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "competitor" && competitorResult && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm p-6 animate-fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-blue-100 p-2.5 rounded-lg text-blue-600">
+              <Swords size={20} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                Competitor SWOT Analysis
+              </h3>
+              <p className="text-xs text-[var(--text-secondary)]">
+                Strategic intelligence by Kimi K2
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(
+              [
+                ["Strengths", competitorResult.strengths, "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/40"],
+                ["Weaknesses", competitorResult.weaknesses, "text-rose-700 bg-rose-50 dark:bg-rose-950/40"],
+                ["Opportunities", competitorResult.opportunities, "text-blue-700 bg-blue-50 dark:bg-blue-950/40"],
+                ["Threats", competitorResult.threats, "text-amber-700 bg-amber-50 dark:bg-amber-950/40"],
+              ] as const
+            ).map(([label, items, color]) => (
+              <div key={label} className={`rounded-lg p-4 ${color}`}>
+                <h4 className="text-xs font-bold uppercase tracking-widest mb-2">
+                  {label}
+                </h4>
+                <ul className="space-y-1.5">
+                  {items.map((item, i) => (
+                    <li key={i} className="text-sm leading-relaxed">
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 p-4 bg-[var(--bg-main)] border border-[var(--border)] rounded-lg">
+            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-2">
+              Strategic Advice
+            </h4>
+            <p className="text-sm text-[var(--text-primary)] leading-relaxed">
+              {competitorResult.strategicAdvice}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "persona" && personaResult && (
+        <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm p-6 animate-fade-in">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-blue-100 p-2.5 rounded-lg text-blue-600">
+              <UserSearch size={20} />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">
+                {personaResult.name}
+              </h3>
+              <p className="text-xs text-[var(--text-secondary)]">
+                {personaResult.ageRange} · {personaResult.occupation} ·{" "}
+                {personaResult.incomeLevel}
+              </p>
+            </div>
+          </div>
+          <p className="text-sm text-[var(--text-primary)] leading-relaxed mb-5">
+            {personaResult.bio}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {(
+              [
+                ["Goals", personaResult.goals],
+                ["Frustrations", personaResult.frustrations],
+                ["Motivations", personaResult.motivations],
+              ] as const
+            ).map(([label, items]) => (
+              <div
+                key={label}
+                className="p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-main)]"
+              >
+                <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">
+                  {label}
+                </h4>
+                <ul className="space-y-1">
+                  {items.map((item, i) => (
+                    <li
+                      key={i}
+                      className="text-xs text-[var(--text-primary)] leading-relaxed"
+                    >
+                      • {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4">
+            <h4 className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">
+              Preferred channels
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {personaResult.preferredChannels.map((ch) => (
+                <span
+                  key={ch}
+                  className="text-xs px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 font-semibold"
+                >
+                  {ch}
+                </span>
+              ))}
             </div>
           </div>
         </div>
