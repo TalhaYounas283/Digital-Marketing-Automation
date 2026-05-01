@@ -1,0 +1,142 @@
+# AutoMarketer AI — multi-container setup.
+#
+# Four services on a private compose network:
+#   postgres    — Postgres 16 (data volume: postgres_data)
+#   n8n         — workflow engine (data volume: n8n_data, UI on :5678)
+#   backend     — NestJS API + WebSocket (:3000), reaches postgres + n8n by name
+#   frontend    — Vite-built static site served by `serve` (:5173)
+#
+# A one-shot "backend-migrate" service runs TypeORM migrations + seed data
+# after Postgres is healthy and before the backend starts serving traffic.
+#
+# Usage:
+#   docker compose up --build -d         # build + start all services
+#   docker compose logs -f backend       # follow one service
+#   docker compose ps                    # see status of every service
+#   docker compose down                  # stop + remove containers (volumes kept)
+#   docker compose down -v               # also wipe Postgres + n8n data
+
+x-backend-env: &backend-env
+  NODE_ENV: production
+  PORT: "3000"
+  DATABASE_HOST: postgres
+  DATABASE_PORT: "5432"
+  DATABASE_USER: automarketer
+  DATABASE_PASSWORD: automarketer
+  DATABASE_NAME: automarketer
+  DATABASE_SYNC: "false"
+  DATABASE_LOGGING: "false"
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev-access-secret-change-in-prod-please-1234567890}
+  JWT_ACCESS_EXPIRES_IN: 15m
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-in-prod-please-1234567890}
+  JWT_REFRESH_EXPIRES_IN: 7d
+  N8N_WEBHOOK_URL: http://n8n:5678/webhook/automarketer
+  N8N_WEBHOOK_TIMEOUT_MS: "15000"
+  AI_HF_FALLBACK_ENABLED: ${AI_HF_FALLBACK_ENABLED:-false}
+  HUGGINGFACE_API_TOKEN: ${HUGGINGFACE_API_TOKEN:-}
+  HUGGINGFACE_TEXT_MODEL: meta-llama/Meta-Llama-3-8B-Instruct
+  HUGGINGFACE_IMAGE_MODEL: stabilityai/stable-diffusion-xl-base-1.0
+  WS_KPI_TICK_MS: "5000"
+  CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: automarketer-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: automarketer
+      POSTGRES_PASSWORD: automarketer
+      POSTGRES_DB: automarketer
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"     # exposed so you can psql from the host; remove if not needed
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U automarketer -d automarketer"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  n8n:
+    image: n8nio/n8n:1.84.3
+    container_name: automarketer-n8n
+    restart: unless-stopped
+    environment:
+      N8N_HOST: 0.0.0.0
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://localhost:5678/
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      N8N_RUNNERS_ENABLED: "true"
+      GENERIC_TIMEZONE: UTC
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+  backend-migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: automarketer-backend:latest
+    container_name: automarketer-backend-migrate
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: *backend-env
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        echo "Running migrations..."
+        node dist/database/run-migrations.js
+        echo "Seeding demo data..."
+        node dist/database/seeds/seed.js || echo "Seed step finished (rows likely already present)"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: automarketer-backend:latest
+    container_name: automarketer-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      n8n:
+        condition: service_started
+      backend-migrate:
+        condition: service_completed_successfully
+    environment: *backend-env
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 4
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api/v1}
+        VITE_WEBSOCKET_URL: ${VITE_WEBSOCKET_URL:-ws://localhost:3000/ws}
+    image: automarketer-frontend:latest
+    container_name: automarketer-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "5173:5173"
+
+volumes:
+  postgres_data:
+  n8n_data:

@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+*.log
+.git
+.idea
+.vscode
+.DS_Store
+*.bak
+*.docx
+*.docx.bak
+setup-archive

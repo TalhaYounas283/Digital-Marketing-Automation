@@ -1,0 +1,398 @@
+import React, { useEffect, useState } from "react";
+import { Lead } from "@/types";
+import { leadsApi, LeadDto } from "@/services/leadsApi";
+import {
+  Search,
+  Filter,
+  RefreshCw,
+  Star,
+  Plus,
+  Mail,
+  Trash2,
+  Download,
+} from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
+import { exportToCsv, stampedFilename } from "@/utils/exportCsv";
+import { useToast } from "@/contexts/ToastContext";
+
+const dtoToLead = (dto: LeadDto): Lead => ({
+  id: dto.id,
+  name: dto.name,
+  email: dto.email,
+  source: dto.source,
+  status: dto.status,
+  score: dto.score,
+  aiAnalysis: dto.aiAnalysis ?? undefined,
+});
+
+export const LeadsManager: React.FC = () => {
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newLead, setNewLead] = useState({ name: "", email: "", source: "" });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | Lead["status"]>("all");
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    leadsApi
+      .list()
+      .then((list) => setLeads(list.map(dtoToLead)))
+      .catch((err) =>
+        showToast("Failed to load leads", {
+          variant: "error",
+          description: err instanceof Error ? err.message : "Unknown error",
+        }),
+      );
+  }, [showToast]);
+
+  const handleScoreLead = async (id: string, name: string, source: string) => {
+    setAnalyzingId(id);
+    try {
+      const updated = await leadsApi.analyze(id, {
+        name,
+        source,
+        interactions: "Analyzed public company records and recent funding rounds.",
+      });
+      setLeads((prev) => prev.map((l) => (l.id === id ? dtoToLead(updated) : l)));
+    } catch (err) {
+      showToast("Lead scoring failed", {
+        variant: "error",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
+
+  const handleAddLead = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const created = await leadsApi.create({
+        name: newLead.name,
+        email: newLead.email,
+        source: newLead.source,
+        status: "New",
+        score: 0,
+      });
+      setLeads((prev) => [dtoToLead(created), ...prev]);
+      setNewLead({ name: "", email: "", source: "" });
+      setIsModalOpen(false);
+    } catch (err) {
+      showToast("Could not create lead", {
+        variant: "error",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
+
+  const handleUpdateStatus = async (id: string, status: Lead["status"]) => {
+    try {
+      const updated = await leadsApi.update(id, { status });
+      setLeads((prev) => prev.map((l) => (l.id === id ? dtoToLead(updated) : l)));
+    } catch (err) {
+      showToast("Could not update lead", {
+        variant: "error",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
+
+  const handleDeleteLead = async (id: string) => {
+    try {
+      await leadsApi.remove(id);
+      setLeads((prev) => prev.filter((l) => l.id !== id));
+    } catch (err) {
+      showToast("Could not delete lead", {
+        variant: "error",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    }
+  };
+
+  const handleExportLeads = () => {
+    const list = filteredLeads.length ? filteredLeads : leads;
+    const rows = list.map((l) => ({
+      Name: l.name,
+      Email: l.email,
+      Source: l.source,
+      Status: l.status,
+      "AI Score": l.score,
+      "AI Analysis": l.aiAnalysis ?? "",
+    }));
+    const count = exportToCsv(rows, stampedFilename("leads", "csv"));
+    showToast("Leads exported", {
+      variant: "success",
+      description: `${count} leads downloaded as CSV.`,
+    });
+  };
+
+  const filteredLeads = leads.filter((l) => {
+    const matchesSearch =
+      l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      l.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "all" || l.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  return (
+    <div className="flex flex-col animate-fade-in pb-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6 pb-6 border-b border-[var(--border)] mb-8">
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">
+            Lead Management
+          </h2>
+          <p className="text-[var(--text-secondary)] text-sm mt-1">
+            Track and qualify potential sales prospects with AI intelligence
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportLeads}
+            className="px-4 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all border border-[var(--border)] text-[var(--text-primary)] hover:bg-[var(--bg-main)]"
+          >
+            <Download size={16} />
+            Export
+          </button>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-sm"
+          >
+            <Plus size={18} />
+            Add New Lead
+          </button>
+        </div>
+      </div>
+
+      {/* Main Table Card */}
+      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-xl shadow-sm overflow-hidden flex flex-col">
+        {/* Table Toolbar */}
+        <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-main)] flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search
+              size={16}
+              className="absolute left-3 top-2.5 text-slate-400"
+            />
+            <input
+              type="text"
+              placeholder="Search leads by name or email..."
+              className="w-full pl-10 pr-4 py-2 text-sm bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div className="relative flex items-center">
+            <Filter
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+            />
+            <select
+              value={statusFilter}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as typeof statusFilter)
+              }
+              className="appearance-none pl-9 pr-8 py-2 bg-[var(--bg-card)] border border-[var(--border)] rounded-lg text-xs font-bold text-[var(--text-secondary)] hover:bg-[var(--bg-main)] cursor-pointer outline-none focus:ring-2 focus:ring-blue-500/20"
+            >
+              <option value="all">All Statuses</option>
+              <option value="New">New</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Qualified">Qualified</option>
+              <option value="Converted">Converted</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-[var(--bg-main)] text-[var(--text-secondary)] font-bold uppercase text-[10px] tracking-widest border-b border-[var(--border)]">
+              <tr>
+                <th className="px-6 py-4">Company / Lead</th>
+                <th className="px-6 py-4">Acquisition Source</th>
+                <th className="px-6 py-4">Current Status</th>
+                <th className="px-6 py-4 text-center">Lead Score</th>
+                <th className="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {filteredLeads.map((lead) => (
+                <tr
+                  key={lead.id}
+                  className="hover:bg-[var(--bg-main)] transition-colors group"
+                >
+                  <td className="px-6 py-5">
+                    <div className="font-bold text-[var(--text-primary)]">
+                      {lead.name}
+                    </div>
+                    <div className="text-xs text-[var(--text-secondary)] flex items-center gap-1.5 mt-0.5">
+                      <Mail size={12} className="text-slate-400" /> {lead.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-[var(--text-secondary)] font-medium">
+                    {lead.source}
+                  </td>
+                  <td className="px-6 py-5">
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                        lead.status === "Qualified"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                          : lead.status === "New"
+                            ? "bg-blue-50 text-blue-700 border-blue-100"
+                            : "bg-slate-50 text-slate-500 border-slate-200"
+                      }`}
+                    >
+                      {lead.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center justify-center gap-2">
+                      {analyzingId === lead.id ? (
+                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      ) : lead.score > 0 ? (
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-lg font-bold ${
+                              lead.score >= 80
+                                ? "text-emerald-500"
+                                : lead.score >= 50
+                                  ? "text-amber-500"
+                                  : "text-slate-400"
+                            }`}
+                          >
+                            {lead.score}
+                          </span>
+                          {lead.aiAnalysis && (
+                            <div className="group relative">
+                              <Star
+                                size={14}
+                                className="text-amber-400 fill-amber-400 cursor-help"
+                              />
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 p-3 bg-slate-900 text-white rounded-lg text-[10px] font-medium invisible group-hover:visible shadow-xl z-10 border border-slate-700 animate-fade-in">
+                                <p className="font-bold text-blue-400 uppercase tracking-widest mb-1.5 border-b border-slate-700 pb-1">
+                                  AI Intelligence Insight
+                                </p>
+                                {lead.aiAnalysis}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleScoreLead(lead.id, lead.name, lead.source)
+                          }
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                          title="Run AI Qualification"
+                        >
+                          <RefreshCw size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <select
+                        aria-label={`Update status for ${lead.name}`}
+                        className="px-2.5 py-1.5 text-xs bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg outline-none focus:border-blue-500"
+                        value={lead.status}
+                        onChange={(e) =>
+                          handleUpdateStatus(
+                            lead.id,
+                            e.target.value as Lead["status"],
+                          )
+                        }
+                      >
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Qualified">Qualified</option>
+                        <option value="Converted">Converted</option>
+                      </select>
+                      <button
+                        onClick={() => handleDeleteLead(lead.id)}
+                        className="text-rose-500 hover:text-rose-600 p-2 rounded-lg hover:bg-rose-50 transition-colors"
+                        title="Delete lead"
+                        aria-label={`Delete ${lead.name}`}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Register New Sales Lead"
+      >
+        <form onSubmit={handleAddLead} className="space-y-4">
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">
+              Organization Name
+            </label>
+            <input
+              required
+              type="text"
+              className="w-full p-3 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              placeholder="e.g. Acme Corp"
+              value={newLead.name}
+              onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">
+              Primary Email
+            </label>
+            <input
+              required
+              type="email"
+              className="w-full p-3 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              placeholder="lead@company.com"
+              value={newLead.email}
+              onChange={(e) =>
+                setNewLead({ ...newLead, email: e.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">
+              Referral Source
+            </label>
+            <select
+              className="w-full p-3 bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+              value={newLead.source}
+              onChange={(e) =>
+                setNewLead({ ...newLead, source: e.target.value })
+              }
+            >
+              <option value="">Select Inbound Source</option>
+              <option value="Direct Search">Google / Direct Search</option>
+              <option value="LinkedIn Inbound">LinkedIn Social</option>
+              <option value="Website Form">Corporate Website</option>
+              <option value="Partner Referral">Business Partner</option>
+            </select>
+          </div>
+          <div className="pt-4 flex gap-3">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 py-2.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-main)] font-bold text-sm transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-bold text-sm transition-colors shadow-sm"
+            >
+              Register Lead
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </div>
+  );
+};
