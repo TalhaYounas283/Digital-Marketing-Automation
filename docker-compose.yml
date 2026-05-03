@@ -30,12 +30,14 @@ x-backend-env: &backend-env
   JWT_ACCESS_EXPIRES_IN: 15m
   JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-refresh-secret-change-in-prod-please-1234567890}
   JWT_REFRESH_EXPIRES_IN: 7d
+  GEMINI_API_KEY: ${GEMINI_API_KEY}
+  GEMINI_TEXT_MODEL: ${GEMINI_TEXT_MODEL:-gemini-2.5-flash}
+  GEMINI_TIMEOUT_MS: "30000"
   N8N_WEBHOOK_URL: http://n8n:5678/webhook/automarketer
   N8N_WEBHOOK_TIMEOUT_MS: "15000"
-  AI_HF_FALLBACK_ENABLED: ${AI_HF_FALLBACK_ENABLED:-false}
-  HUGGINGFACE_API_TOKEN: ${HUGGINGFACE_API_TOKEN:-}
-  HUGGINGFACE_TEXT_MODEL: meta-llama/Meta-Llama-3-8B-Instruct
-  HUGGINGFACE_IMAGE_MODEL: stabilityai/stable-diffusion-xl-base-1.0
+  N8N_API_URL: ${N8N_API_URL:-http://n8n:5678/api/v1}
+  N8N_API_KEY: ${N8N_API_KEY:-}
+  N8N_API_TIMEOUT_MS: "10000"
   WS_KPI_TICK_MS: "5000"
   CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
 

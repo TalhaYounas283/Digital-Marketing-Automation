@@ -155,7 +155,10 @@ export class AiService implements OnModuleInit {
           contents: [{ role: 'user', parts: [{ text: prompt }] }],
           generationConfig: {
             temperature: 0.7,
-            maxOutputTokens: 2048,
+            maxOutputTokens: 8192,
+            // Disable Gemini 2.5 "thinking" tokens — they burn the output
+            // budget and truncate JSON responses for our structured actions.
+            thinkingConfig: { thinkingBudget: 0 },
           },
         },
         {
@@ -207,15 +210,16 @@ export class AiService implements OnModuleInit {
   }
 
   private tryJson<T>(text: string): T | null {
-    const start = text.indexOf('{');
-    const startArr = text.indexOf('[');
+    const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, '').trim();
+    const start = cleaned.indexOf('{');
+    const startArr = cleaned.indexOf('[');
     const begin =
       start === -1 ? startArr : startArr === -1 ? start : Math.min(start, startArr);
     if (begin === -1) return null;
-    const end = Math.max(text.lastIndexOf('}'), text.lastIndexOf(']'));
+    const end = Math.max(cleaned.lastIndexOf('}'), cleaned.lastIndexOf(']'));
     if (end === -1 || end <= begin) return null;
     try {
-      return JSON.parse(text.slice(begin, end + 1)) as T;
+      return JSON.parse(cleaned.slice(begin, end + 1)) as T;
     } catch {
       return null;
     }
