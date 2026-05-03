@@ -29,5 +29,11 @@ export const configValidationSchema = Joi.object({
   N8N_WEBHOOK_URL: Joi.string().uri().allow('').optional(),
   N8N_WEBHOOK_TIMEOUT_MS: Joi.number().default(15000),
 
+  // n8n REST API (Workflow tab). If N8N_API_KEY is empty, workflow creation
+  // only saves to the local DB. If set, the backend creates real n8n workflows.
+  N8N_API_URL: Joi.string().uri().allow('').optional(),
+  N8N_API_KEY: Joi.string().allow('').optional(),
+  N8N_API_TIMEOUT_MS: Joi.number().default(10000),
+
   WS_KPI_TICK_MS: Joi.number().default(5000),
 });

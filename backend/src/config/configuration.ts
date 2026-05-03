@@ -25,6 +25,9 @@ export const loadConfiguration = () => ({
     geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS ?? '30000', 10),
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL ?? '',
     n8nTimeoutMs: parseInt(process.env.N8N_WEBHOOK_TIMEOUT_MS ?? '15000', 10),
+    n8nApiUrl: process.env.N8N_API_URL ?? '',
+    n8nApiKey: process.env.N8N_API_KEY ?? '',
+    n8nApiTimeoutMs: parseInt(process.env.N8N_API_TIMEOUT_MS ?? '10000', 10),
   },
   realtime: {
     kpiTickMs: parseInt(process.env.WS_KPI_TICK_MS ?? '5000', 10),
