@@ -279,7 +279,7 @@ export const Templates: React.FC = () => {
   const handleCreateCustom = () => {
     showToast("Opening AI Content Generator", {
       variant: "info",
-      description: "Draft your custom template with Kimi K2.",
+      description: "Draft your custom template with Gemini 2.5.",
     });
     navigate("/generate");
   };

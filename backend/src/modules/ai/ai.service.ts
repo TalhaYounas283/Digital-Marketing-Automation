@@ -17,16 +17,17 @@ interface RunOptions {
   persistFor?: { platform?: string; tone?: string };
 }
 
+type Provider = 'gemini' | 'n8n';
+
 @Injectable()
 export class AiService implements OnModuleInit {
   private readonly logger = new Logger(AiService.name);
 
+  private geminiApiKey!: string;
+  private geminiTextModel!: string;
+  private geminiTimeoutMs!: number;
   private n8nWebhookUrl!: string;
   private n8nTimeoutMs!: number;
-  private hfFallbackEnabled!: boolean;
-  private hfToken!: string;
-  private hfTextModel!: string;
-  private hfImageModel!: string;
 
   constructor(
     private readonly http: HttpService,
@@ -36,24 +37,26 @@ export class AiService implements OnModuleInit {
   ) {}
 
   onModuleInit() {
+    this.geminiApiKey = this.config.get<string>('ai.geminiApiKey') ?? '';
+    this.geminiTextModel =
+      this.config.get<string>('ai.geminiTextModel') ?? 'gemini-2.5-flash';
+    this.geminiTimeoutMs =
+      this.config.get<number>('ai.geminiTimeoutMs') ?? 30000;
     this.n8nWebhookUrl = this.config.get<string>('ai.n8nWebhookUrl') ?? '';
     this.n8nTimeoutMs = this.config.get<number>('ai.n8nTimeoutMs') ?? 15000;
-    this.hfFallbackEnabled =
-      this.config.get<boolean>('ai.hfFallbackEnabled') ?? false;
-    this.hfToken = this.config.get<string>('ai.hfToken') ?? '';
-    this.hfTextModel = this.config.get<string>('ai.hfTextModel') ?? '';
-    this.hfImageModel = this.config.get<string>('ai.hfImageModel') ?? '';
 
-    if (!this.n8nWebhookUrl) {
+    if (!this.geminiApiKey) {
       throw new Error(
-        'AI bootstrap failed: N8N_WEBHOOK_URL is required (n8n is the primary AI provider).',
+        'AI bootstrap failed: GEMINI_API_KEY is required (Gemini is the primary AI provider).',
       );
     }
-    this.logger.log(`Primary AI provider: n8n at ${this.n8nWebhookUrl}`);
     this.logger.log(
-      this.hfFallbackEnabled
-        ? `Hugging Face fallback enabled (text=${this.hfTextModel}, image=${this.hfImageModel})`
-        : 'Hugging Face fallback disabled',
+      `Primary AI provider: Gemini (model=${this.geminiTextModel})`,
+    );
+    this.logger.log(
+      this.n8nWebhookUrl
+        ? `n8n secondary path configured at ${this.n8nWebhookUrl}`
+        : 'n8n secondary path not configured (skipping)',
     );
   }
 
@@ -62,20 +65,20 @@ export class AiService implements OnModuleInit {
     payload: Record<string, unknown>,
     opts: RunOptions = {},
   ): Promise<T> {
-    let provider: 'n8n' | 'huggingface' = 'n8n';
+    let provider: Provider = 'gemini';
     let result: T;
     try {
-      result = await this.callN8n<T>(action, payload);
+      result = await this.callGemini<T>(action, payload);
     } catch (err) {
       const message = (err as Error).message;
-      this.logger.warn(`n8n provider failed for ${action}: ${message}`);
-      if (this.hfFallbackEnabled) {
-        this.logger.log(`Falling back to Hugging Face for ${action}`);
-        provider = 'huggingface';
-        result = await this.callHuggingFace<T>(action, payload);
+      this.logger.warn(`Gemini provider failed for ${action}: ${message}`);
+      if (this.n8nWebhookUrl) {
+        this.logger.log(`Falling back to n8n for ${action}`);
+        provider = 'n8n';
+        result = await this.callN8n<T>(action, payload);
       } else {
         throw new BadGatewayException(
-          `n8n provider failed for action "${action}": ${message}`,
+          `Gemini provider failed for action "${action}": ${message}`,
         );
       }
     }
@@ -132,75 +135,57 @@ export class AiService implements OnModuleInit {
     return response.data;
   }
 
-  private async callHuggingFace<T>(
+  private async callGemini<T>(
     action: AiAction,
     payload: Record<string, unknown>,
   ): Promise<T> {
-    if (!this.hfToken) {
-      throw new BadGatewayException(
-        'Hugging Face fallback enabled but HUGGINGFACE_API_TOKEN is empty',
-      );
-    }
-    const prompt = PROMPT_TEMPLATES[action](payload);
-
     if (action === 'generate_image') {
-      const url = `https://api-inference.huggingface.co/models/${this.hfImageModel}`;
-      const response = await firstValueFrom(
-        this.http.post(
-          url,
-          { inputs: prompt },
-          {
-            responseType: 'arraybuffer',
-            headers: {
-              Authorization: `Bearer ${this.hfToken}`,
-              'Content-Type': 'application/json',
-            },
-            timeout: 30000,
-          },
-        ),
+      throw new BadGatewayException(
+        'Image generation is not supported by the current Gemini configuration.',
       );
-      const base64 = Buffer.from(response.data as ArrayBuffer).toString(
-        'base64',
-      );
-      return { imageUrl: `data:image/png;base64,${base64}` } as unknown as T;
     }
 
-    const url = `https://api-inference.huggingface.co/models/${this.hfTextModel}`;
+    const prompt = PROMPT_TEMPLATES[action](payload);
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.geminiTextModel}:generateContent?key=${this.geminiApiKey}`;
+
     const response = await firstValueFrom(
       this.http.post(
         url,
         {
-          inputs: prompt,
-          parameters: { max_new_tokens: 512, return_full_text: false },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+          },
         },
         {
-          headers: {
-            Authorization: `Bearer ${this.hfToken}`,
-            'Content-Type': 'application/json',
-          },
-          timeout: 30000,
+          headers: { 'Content-Type': 'application/json' },
+          timeout: this.geminiTimeoutMs,
         },
       ),
     );
 
-    const text = this.extractText(response.data);
+    const text = this.extractGeminiText(response.data);
     return this.parseForAction<T>(action, text);
   }
 
-  private extractText(raw: unknown): string {
-    if (Array.isArray(raw) && raw.length > 0) {
-      const first = raw[0] as { generated_text?: string };
-      if (first?.generated_text) return first.generated_text;
+  private extractGeminiText(raw: unknown): string {
+    const data = raw as {
+      candidates?: Array<{
+        content?: { parts?: Array<{ text?: string }> };
+      }>;
+    };
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    const joined = parts
+      .map((p) => (typeof p.text === 'string' ? p.text : ''))
+      .join('')
+      .trim();
+    if (!joined) {
+      throw new BadGatewayException(
+        'Gemini returned no text content in the response.',
+      );
     }
-    if (
-      typeof raw === 'object' &&
-      raw &&
-      'generated_text' in raw &&
-      typeof (raw as { generated_text: unknown }).generated_text === 'string'
-    )
-      return (raw as { generated_text: string }).generated_text;
-    if (typeof raw === 'string') return raw;
-    return JSON.stringify(raw);
+    return joined;
   }
 
   private parseForAction<T>(action: AiAction, text: string): T {
@@ -217,7 +202,7 @@ export class AiService implements OnModuleInit {
     const json = this.tryJson<T>(text);
     if (json) return json;
     throw new BadGatewayException(
-      `Hugging Face response for "${action}" was not valid JSON`,
+      `Gemini response for "${action}" was not valid JSON`,
     );
   }
 

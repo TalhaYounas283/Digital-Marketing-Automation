@@ -27,7 +27,7 @@ const greetingMessage: ChatMessage = {
   id: "greeting",
   role: "assistant",
   content:
-    "Hi! I'm Kimi, your AI marketing assistant. Ask me anything about campaigns, content, leads, or strategy.",
+    "Hi! I'm your AI marketing assistant, powered by Gemini 2.5. Ask me anything about campaigns, content, leads, or strategy.",
   timestamp: new Date(),
 };
 
@@ -112,9 +112,9 @@ export const Chatbot: React.FC = () => {
                 <Sparkles size={18} />
               </div>
               <div>
-                <p className="text-sm font-bold">Kimi AI Assistant</p>
+                <p className="text-sm font-bold">AI Assistant</p>
                 <p className="text-[11px] text-white/70">
-                  Powered by Kimi K2 · Always learning
+                  Powered by Gemini 2.5 · Always learning
                 </p>
               </div>
             </div>
@@ -160,7 +160,7 @@ export const Chatbot: React.FC = () => {
               <div className="flex justify-start">
                 <div className="bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl rounded-bl-sm px-3.5 py-2.5 flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                   <Loader2 size={14} className="animate-spin" />
-                  <span>Kimi is thinking…</span>
+                  <span>Thinking…</span>
                 </div>
               </div>
             )}
@@ -196,7 +196,7 @@ export const Chatbot: React.FC = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Kimi anything…"
+              placeholder="Ask anything…"
               disabled={isThinking}
               className="flex-1 enterprise-input"
             />

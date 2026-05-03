@@ -214,7 +214,7 @@ export const AIInsights: React.FC = () => {
             </span>
           </div>
           <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-            Recommendations from Kimi K2
+            Recommendations from Gemini 2.5
           </h2>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
             Data-driven actions to improve campaign performance.

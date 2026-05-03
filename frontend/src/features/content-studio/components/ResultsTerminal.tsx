@@ -362,7 +362,7 @@ export const ResultsTerminal: React.FC<ResultsTerminalProps> = ({
                 Competitor SWOT Analysis
               </h3>
               <p className="text-xs text-[var(--text-secondary)]">
-                Strategic intelligence by Kimi K2
+                Strategic intelligence by Gemini 2.5
               </p>
             </div>
           </div>

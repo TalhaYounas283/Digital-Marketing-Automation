@@ -20,15 +20,11 @@ export const loadConfiguration = () => ({
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
   },
   ai: {
+    geminiApiKey: process.env.GEMINI_API_KEY ?? '',
+    geminiTextModel: process.env.GEMINI_TEXT_MODEL ?? 'gemini-2.5-flash',
+    geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS ?? '30000', 10),
     n8nWebhookUrl: process.env.N8N_WEBHOOK_URL ?? '',
     n8nTimeoutMs: parseInt(process.env.N8N_WEBHOOK_TIMEOUT_MS ?? '15000', 10),
-    hfFallbackEnabled: process.env.AI_HF_FALLBACK_ENABLED === 'true',
-    hfToken: process.env.HUGGINGFACE_API_TOKEN ?? '',
-    hfTextModel:
-      process.env.HUGGINGFACE_TEXT_MODEL ?? 'meta-llama/Meta-Llama-3-8B-Instruct',
-    hfImageModel:
-      process.env.HUGGINGFACE_IMAGE_MODEL ??
-      'stabilityai/stable-diffusion-xl-base-1.0',
   },
   realtime: {
     kpiTickMs: parseInt(process.env.WS_KPI_TICK_MS ?? '5000', 10),

@@ -268,7 +268,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
               <Lightbulb size={20} className="text-blue-600 shrink-0" />
               <p className="text-xs text-blue-700 leading-relaxed">
-                Kimi K2 AI will analyze search intent and keyword
+                Gemini 2.5 will analyze search intent and keyword
                 competitiveness to suggest high-impact opportunities.
               </p>
             </div>
@@ -335,7 +335,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-start gap-3">
               <Lightbulb size={20} className="text-blue-600 shrink-0" />
               <p className="text-xs text-blue-700 leading-relaxed">
-                Kimi K2 will produce a SWOT analysis and strategic advice for
+                Gemini 2.5 will produce a SWOT analysis and strategic advice for
                 positioning against this competitor.
               </p>
             </div>

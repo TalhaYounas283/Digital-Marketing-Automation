@@ -20,22 +20,14 @@ export const configValidationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().min(16).required(),
   JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
 
-  // n8n is REQUIRED — boot fails without it.
-  N8N_WEBHOOK_URL: Joi.string().uri().required(),
-  N8N_WEBHOOK_TIMEOUT_MS: Joi.number().default(15000),
+  // Gemini is REQUIRED — boot fails without it.
+  GEMINI_API_KEY: Joi.string().required(),
+  GEMINI_TEXT_MODEL: Joi.string().default('gemini-2.5-flash'),
+  GEMINI_TIMEOUT_MS: Joi.number().default(30000),
 
-  AI_HF_FALLBACK_ENABLED: Joi.boolean().default(false),
-  HUGGINGFACE_API_TOKEN: Joi.when('AI_HF_FALLBACK_ENABLED', {
-    is: true,
-    then: Joi.string().required(),
-    otherwise: Joi.string().allow('').optional(),
-  }),
-  HUGGINGFACE_TEXT_MODEL: Joi.string().default(
-    'meta-llama/Meta-Llama-3-8B-Instruct',
-  ),
-  HUGGINGFACE_IMAGE_MODEL: Joi.string().default(
-    'stabilityai/stable-diffusion-xl-base-1.0',
-  ),
+  // n8n is optional. If set and reachable, used as a secondary path.
+  N8N_WEBHOOK_URL: Joi.string().uri().allow('').optional(),
+  N8N_WEBHOOK_TIMEOUT_MS: Joi.number().default(15000),
 
   WS_KPI_TICK_MS: Joi.number().default(5000),
 });

@@ -74,7 +74,7 @@ export interface AutomationWorkflow {
   lastRun: string;
 }
 
-// AI-powered Feature Types (Kimi K2)
+// AI-powered Feature Types (Gemini 2.5)
 export interface SwotAnalysis {
   strengths: string[];
   weaknesses: string[];
